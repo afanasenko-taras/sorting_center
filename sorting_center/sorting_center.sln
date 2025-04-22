@@ -5,6 +5,10 @@ VisualStudioVersion = 17.13.35818.85 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractModel", "AbstractModel\AbstractModel.csproj", "{56B988CA-DD75-41A1-8E81-BDA0A0FEF69A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortingCenterModel", "SortingCenterModel\SortingCenterModel.csproj", "{A5A4B4A6-DA10-4EB7-B1A1-F259E7F4C79C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortingCenterRuner", "SortingCenterRuner\SortingCenterRuner.csproj", "{28A2C6F1-F4AF-4D75-ACD1-8BD65AFD0516}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{56B988CA-DD75-41A1-8E81-BDA0A0FEF69A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56B988CA-DD75-41A1-8E81-BDA0A0FEF69A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56B988CA-DD75-41A1-8E81-BDA0A0FEF69A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A4B4A6-DA10-4EB7-B1A1-F259E7F4C79C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A4B4A6-DA10-4EB7-B1A1-F259E7F4C79C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A4B4A6-DA10-4EB7-B1A1-F259E7F4C79C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A4B4A6-DA10-4EB7-B1A1-F259E7F4C79C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28A2C6F1-F4AF-4D75-ACD1-8BD65AFD0516}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28A2C6F1-F4AF-4D75-ACD1-8BD65AFD0516}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28A2C6F1-F4AF-4D75-ACD1-8BD65AFD0516}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28A2C6F1-F4AF-4D75-ACD1-8BD65AFD0516}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

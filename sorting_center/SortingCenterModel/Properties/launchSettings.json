@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SortingCenterModel": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
