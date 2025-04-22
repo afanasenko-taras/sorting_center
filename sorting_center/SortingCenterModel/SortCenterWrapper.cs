@@ -14,6 +14,11 @@ namespace SortingCenterModel
         public SortCenterWrapper(SortingCenterConfig sortConfig)
         {
             this.sortConfig = sortConfig;
+            TimeSpan startPoint = TimeSpan.Zero;
+            for(int i=0; i<sortConfig.sorceNumber;i++)
+            {
+                startPoint = AddEvent(startPoint, new CreateSourcePoint()); 
+            }
         }
     }
 }
