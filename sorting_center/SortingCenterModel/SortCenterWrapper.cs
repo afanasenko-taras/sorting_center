@@ -9,6 +9,11 @@ namespace SortingCenterModel
 {
     public class SortCenterWrapper : FastAbstractWrapper
     {
+        private SortingCenterConfig sortConfig;
 
+        public SortCenterWrapper(SortingCenterConfig sortConfig)
+        {
+            this.sortConfig = sortConfig;
+        }
     }
 }
