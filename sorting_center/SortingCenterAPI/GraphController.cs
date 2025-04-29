@@ -65,6 +65,25 @@ namespace SortingCenterAPI.Controllers
                             Target = linkedNode.Id
                         });
                     }
+
+
+                    foreach (var linkedNode in _sortCenter.robotNodes[row][col].getNodes)
+                    {
+                        response.GetEdges.Add(new GraphEdge
+                        {
+                            Source = node.Id,
+                            Target = linkedNode.Id
+                        });
+                    }
+
+                    foreach (var linkedNode in _sortCenter.robotNodes[row][col].dropNodes)
+                    {
+                        response.DropEdges.Add(new GraphEdge
+                        {
+                            Source = node.Id,
+                            Target = linkedNode.Id
+                        });
+                    }
                 }
             }
 

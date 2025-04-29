@@ -89,6 +89,21 @@ namespace SortingCenterModel
                         robotNodes[row][col].AddLinkedNode(robotNodes[row][linked_col]);
 
 
+                    if (lineNodes.ContainsKey(row-1))
+                    {
+                        if (lineNodes[row-1].ContainsKey(col))
+                        {
+                            robotNodes[row][col].getNodes.Add(lineNodes[row - 1][col][sortConfig.subRowNumber-1]);
+                        }
+                    }
+
+                    if (lineNodes.ContainsKey(row))
+                    {
+                        if (lineNodes[row].ContainsKey(col))
+                        {
+                            robotNodes[row][col].dropNodes.Add(lineNodes[row][col][0]);
+                        }
+                    }
 
                 }
                 if (row % 2 == 0)
