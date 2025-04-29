@@ -1,0 +1,10 @@
+@SortingCenterAPI_HostAddress = http://localhost:5000
+@SortingCenterAPI_HostAddress_Https = https://localhost:5001
+
+### Получение состояния графа через HTTP
+GET {{SortingCenterAPI_HostAddress}}/api/graph/state
+Accept: application/json
+
+### Получение состояния графа через HTTPS
+GET {{SortingCenterAPI_HostAddress_Https}}/api/graph/state
+Accept: application/json

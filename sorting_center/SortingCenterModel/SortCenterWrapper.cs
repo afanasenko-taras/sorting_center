@@ -5,38 +5,73 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace SortingCenterModel
 {
     public class SortCenterWrapper : FastAbstractWrapper
     {
         private SortingCenterConfig sortConfig;
-        Dictionary<int, Dictionary<int, RobotNode>> robotNodes = new Dictionary<int, Dictionary<int, RobotNode>>();
-        
-        private void AddNode(int row, int v)
+        public Dictionary<int, Dictionary<int, RobotNode>> robotNodes = new Dictionary<int, Dictionary<int, RobotNode>>();
+        public Dictionary<int, Dictionary<int, Dictionary<int, LineNode>>> lineNodes = new Dictionary<int, Dictionary<int, Dictionary<int, LineNode>>>();
+
+
+        private void AddNode(int row, ref int v, int column, int line)
+        {
+            if (!robotNodes.ContainsKey(row))
+                robotNodes.Add(row, new Dictionary<int, RobotNode>());
+            robotNodes[row].Add(v, new RobotNode(row, v, column, line));
+            v++;
+        }
+
+
+        private void AddNode(int row, ref int v)
         {
             if (!robotNodes.ContainsKey(row))
                 robotNodes.Add(row, new Dictionary<int, RobotNode>());
             robotNodes[row].Add(v, new RobotNode(row, v));
+            v++;
         }
+
+        private void AddLine(int row, int column, int line, int num_sub_row, int x)
+        {
+            if (!lineNodes.ContainsKey(row))
+                lineNodes.Add(row, new Dictionary<int, Dictionary<int, LineNode>>());
+            if (!lineNodes[row].ContainsKey(x))
+                lineNodes[row].Add(x, new Dictionary<int, LineNode>());
+            for (int i=0; i< num_sub_row; i++)
+            {
+                lineNodes[row][x].Add(i, new LineNode(row, column, line, i, num_sub_row, x));
+            }
+        }
+
 
         public SortCenterWrapper(SortingCenterConfig sortConfig)
         {
             this.sortConfig = sortConfig;
             TimeSpan startPoint = TimeSpan.Zero;
-
-            int lastColumn = sortConfig.columnNumber * sortConfig.lineNumber + 1;
-
+            int lastColumn = 0;
             for (int row = 0; row < sortConfig.rowNumber + 1; row++)
             {
-                AddNode(row, 0);
+                Console.WriteLine($"row {row}");
+                int cur_column = 0;
+                AddNode(row, ref cur_column);
                 for (int column = 0; column < sortConfig.columnNumber; column++)
                 {
+                    Console.WriteLine($"column {column}");
                     for (int line = 0; line < sortConfig.lineNumber; line++)
                     {
-                        AddNode(row, column * sortConfig.lineNumber + line + 1);
+                        if (row != sortConfig.rowNumber)
+                            AddLine(row, column, line, sortConfig.subRowNumber, cur_column);
+                        AddNode(row, ref cur_column, column, line);
+                    }
+                    if (column != sortConfig.columnNumber - 1)
+                    {
+                        int node_idx = (column + 1)  * sortConfig.lineNumber  + 1;
+                        AddNode(row, ref cur_column);
                     }
                 }
-                AddNode(row, lastColumn);
+                lastColumn = cur_column;
+                AddNode(row, ref cur_column);
             }
 
 
@@ -52,6 +87,9 @@ namespace SortingCenterModel
 
                     if (robotNodes[row].ContainsKey(linked_col))
                         robotNodes[row][col].AddLinkedNode(robotNodes[row][linked_col]);
+
+
+
                 }
                 if (row % 2 == 0)
                 {
