@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Center Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .node {
+            fill: #69b3a2;
+            stroke: #000;
+            stroke-width: 1.5px;
+        }
+
+        .link {
+            fill: none;
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1.5px;
+        }
+        .get-edge {
+            stroke: #1f77b4; /* Синий цвет для GetEdges */
+            stroke-width: 2px;
+            stroke-dasharray: 5, 5; /* Пунктирная линия */
+        }
+
+        .drop-edge {
+            stroke: #ff7f0e; /* Оранжевый цвет для DropEdges */
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sorting Center Visualization</h1>
+    <button id="saveSvgButton">Сохранить SVG</button>
+    <svg width="1200" height="600"></svg>
+    <script>
+        const width = 1200;
+        const height = 1200;
+
+        const svg = d3.select("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        fetch('http://localhost:5000/api/graph/state')
+            .then(response => response.json())
+            .then(data => {
+                const links = data.edges;
+                const nodes = data.nodes;
+                const lineNodes = data.lineNodes;
+                const getEdges = data.getEdges; // Получаем GetEdges
+                const dropEdges = data.dropEdges; // Получаем DropEdges
+
+                const nodeRadius = 3; // Радиус узлов
+                const squareSize = 6; // Размер квадрата для LineNodes
+
+                // Функция масштабирования
+                function scaleCoordinate(value, spacing, offset) {
+                    return value * spacing + offset;
+                }
+
+                const spacing = 15; // Расстояние между узлами
+                const offsetX = 20; // Отступ по оси X
+                const offsetY = 180; // Отступ по оси Y
+
+
+
+
+                // Отображение связей
+                const link = svg.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(links)
+                    .enter().append("line")
+                    .attr("class", "link")
+                    .attr("x1", d => scaleCoordinate(nodes.find(n => n.id === d.source).x, spacing, offsetX))
+                    .attr("y1", d => scaleCoordinate(nodes.find(n => n.id === d.source).y, spacing, offsetY))
+                    .attr("x2", d => scaleCoordinate(nodes.find(n => n.id === d.target).x, spacing, offsetX))
+                    .attr("y2", d => scaleCoordinate(nodes.find(n => n.id === d.target).y, spacing, offsetY))
+                    .attr("marker-end", "url(#arrowhead)");
+
+                // Отрисовка GetEdges
+                const getEdge = svg.append("g")
+                    .attr("class", "get-edges")
+                    .selectAll("line")
+                    .data(getEdges)
+                    .enter().append("line")
+                    .attr("x1", d => scaleCoordinate(nodes.find(n => n.id === d.source).x, spacing, offsetX))
+                    .attr("y1", d => scaleCoordinate(nodes.find(n => n.id === d.source).y, spacing, offsetY))
+                    .attr("x2", d => scaleCoordinate(lineNodes.find(n => n.id === d.target).x, spacing, offsetX))
+                    .attr("y2", d => scaleCoordinate(lineNodes.find(n => n.id === d.target).y, spacing, offsetY))
+                    .attr("class", "get-edge");
+
+                // Отрисовка DropEdges
+                const dropEdge = svg.append("g")
+                    .attr("class", "drop-edges")
+                    .selectAll("line")
+                    .data(dropEdges)
+                    .enter().append("line")
+                    .attr("x1", d => scaleCoordinate(nodes.find(n => n.id === d.source).x, spacing, offsetX))
+                    .attr("y1", d => scaleCoordinate(nodes.find(n => n.id === d.source).y, spacing, offsetY))
+                    .attr("x2", d => scaleCoordinate(lineNodes.find(n => n.id === d.target).x, spacing, offsetX))
+                    .attr("y2", d => scaleCoordinate(lineNodes.find(n => n.id === d.target).y, spacing, offsetY))
+                    .attr("class", "drop-edge");
+
+
+
+                // Отображение узлов
+                const node = svg.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("circle")
+                    .data(nodes)
+                    .enter().append("circle")
+                    .attr("class", "node")
+                    .attr("r", nodeRadius)
+                    .attr("cx", d => scaleCoordinate(d.x, spacing, offsetX))
+                    .attr("cy", d => scaleCoordinate(d.y, spacing, offsetY));
+
+                node.append("title")
+                    .text(d => d.id);
+
+                // Отображение LineNodes
+                const lineNode = svg.append("g")
+                    .attr("class", "line-nodes")
+                    .selectAll("rect")
+                    .data(lineNodes)
+                    .enter().append("rect")
+                    .attr("class", "line-node")
+                    .attr("width", squareSize)
+                    .attr("height", squareSize)
+                    .attr("x", d => scaleCoordinate(d.x, spacing, offsetX) - squareSize / 2)
+                    .attr("y", d => scaleCoordinate(d.y, spacing, offsetY) - squareSize / 2)
+                    .attr("fill", "#ffcc00");
+
+                lineNode.append("title")
+                    .text(d => d.id);
+
+                svg.append("defs")
+                    .append("marker")
+                    .attr("id", "arrowhead")
+                    .attr("viewBox", "0 0 10 10")
+                    .attr("refX", 10) // Смещение стрелки
+                    .attr("refY", 5)
+                    .attr("markerWidth", 6)
+                    .attr("markerHeight", 6)
+                    .attr("orient", "auto")
+                    .append("path")
+                    .attr("d", "M 0 0 L 10 5 L 0 10 Z") // Треугольная стрелка
+                    .attr("fill", "#999");
+            })
+            .catch(error => {
+                console.error("Ошибка при загрузке данных:", error);
+            });
+
+
+        document.getElementById("saveSvgButton").addEventListener("click", () => {
+            const svgElement = document.querySelector("svg");
+
+            // Встраиваем стили в SVG
+            const style = document.querySelector("style");
+            if (style) {
+                const styleClone = style.cloneNode(true);
+                const defs = svgElement.querySelector("defs") || svgElement.insertBefore(document.createElement("defs"), svgElement.firstChild);
+                defs.appendChild(styleClone);
+            }
+
+            // Сериализация SVG
+            const serializer = new XMLSerializer();
+            const svgBlob = new Blob([serializer.serializeToString(svgElement)], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(svgBlob);
+
+            // Скачивание файла
+            const downloadLink = document.createElement("a");
+            downloadLink.href = url;
+            downloadLink.download = "graph.svg";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
