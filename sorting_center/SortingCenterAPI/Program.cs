@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SortingCenterAPI.Controllers;
 using SortingCenterAPI.Models;
+using SortingCenterModel;
 using System.Collections.Generic; // Добавлено для использования List<T>  
 using System.Text.Json.Serialization.Metadata;
 
@@ -18,6 +19,18 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+});
+
+
+builder.Services.AddSingleton(provider =>
+{
+    var config = new SortingCenterConfig
+    {
+        rowNumber = 5,
+        columnNumber = 5,
+        lineNumber = 10
+    };
+    return new SortCenterWrapper(config);
 });
 
 builder.Services.AddControllers()

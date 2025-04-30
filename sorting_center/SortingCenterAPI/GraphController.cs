@@ -28,16 +28,10 @@ namespace SortingCenterAPI.Controllers
     {
         private readonly SortCenterWrapper _sortCenter;
 
-        public GraphController()
+        // Внедрение зависимости через конструктор
+        public GraphController(SortCenterWrapper sortCenter)
         {
-            // Создаём объект SortCenterWrapper с конфигурацией
-            var config = new SortingCenterConfig
-            {
-                rowNumber = 5,
-                columnNumber = 5,
-                lineNumber = 10
-            };
-            _sortCenter = new SortCenterWrapper(config);
+            _sortCenter = sortCenter;
         }
 
         [HttpGet("state")]
