@@ -13,13 +13,18 @@ namespace SortingCenterModel
         private SortingCenterConfig sortConfig;
         public Dictionary<int, Dictionary<int, RobotNode>> robotNodes = new Dictionary<int, Dictionary<int, RobotNode>>();
         public Dictionary<int, Dictionary<int, Dictionary<int, LineNode>>> lineNodes = new Dictionary<int, Dictionary<int, Dictionary<int, LineNode>>>();
+        public List<PalettizeNode> palettizeNodes = new List<PalettizeNode>();
+        public List<DepaletizeNode> depaletizeNodes = new List<DepaletizeNode>();
+        public List<RobotSpawnNode> robotSpawnNodes = new List<RobotSpawnNode>();
+
+
 
 
         private void AddNode(int row, ref int v, int column, int line)
         {
             if (!robotNodes.ContainsKey(row))
                 robotNodes.Add(row, new Dictionary<int, RobotNode>());
-            robotNodes[row].Add(v, new RobotNode(row, v, column, line));
+            robotNodes[row].Add(v, new RobotNode(row, v, column, line, sortConfig.lineNumber));
             v++;
         }
 
@@ -130,6 +135,32 @@ namespace SortingCenterModel
                 }
             }
 
+            
+            foreach (var point in sortConfig.robotSpawnPoints)
+            {
+                robotSpawnNodes.Add(new RobotSpawnNode(point.row, point.col, point.join_row, point.join_col));
+                robotNodes[point.join_row][point.join_col].AddLinkedNode(robotSpawnNodes.Last());
+            }
+            /*
+            foreach (var point in sortConfig.depaletizePoints)
+            {
+                depaletizeNodes.Add(new DepaletizeNode(point.row, point.col, 
+                    point.row, point.col, 
+                    $"Depaletize {point.row} {point.col}",
+                    point.join_row, point.join_col));
+                robotNodes[point.join_row][point.join_col].depaletizeNodes.Add(depaletizeNodes.Last());
+            }
+
+            foreach (var point in sortConfig.paletizePoint)
+            {
+                palettizeNodes.Add(new PalettizeNode(point.row, point.col,
+                    point.row, point.col,
+                    $"Palettize {point.row} {point.col}",
+                    point.join_row, point.join_col));
+                robotNodes[point.join_row][point.join_col].paletizeNodes.Add(palettizeNodes.Last());
+            }
+
+            */
 
             Console.WriteLine("SIPPJOP");
             /*

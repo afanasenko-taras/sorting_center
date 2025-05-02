@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SortingCenterModel
 {
+
     public class SortingCenterConfig
     {
         public int rowNumber = 2;
@@ -14,6 +15,11 @@ namespace SortingCenterModel
         public bool isDoubleLine = false;
         public int sorceNumber = 5;
         public int trNumber = 5;
-        internal int subRowNumber = 10;
+        public int subRowNumber = 10;
+
+        public List<(int row, int col, int join_row, int join_col)> robotSpawnPoints = new List<(int row, int col, int join_row, int join_col)>();
+        public List<(int row, int col, int join_row, int join_col)> depaletizePoints = new List<(int row, int col, int join_row, int join_col)>();
+        public List<(int row, int col, int join_row, int join_col)> paletizePoint = new List<(int row, int col, int join_row, int join_col)>();
+
     }
 }

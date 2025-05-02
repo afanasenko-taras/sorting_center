@@ -28,7 +28,23 @@ builder.Services.AddSingleton(provider =>
     {
         rowNumber = 5,
         columnNumber = 5,
-        lineNumber = 10
+        lineNumber = 10,
+        isDoubleLine = false,
+        sorceNumber = 5,
+        trNumber = 5,
+        subRowNumber = 10,
+        robotSpawnPoints = new List<(int row, int col, int join_row, int join_col)>
+        {
+            (-1, 54, 0, 54) // Пример объекта
+        },
+        depaletizePoints = new List<(int row, int col, int join_row, int join_col)>
+        {
+            (-1, 3, 1, 3) // Пример объекта
+        },
+        paletizePoint = new List<(int row, int col, int join_row, int join_col)>
+        {
+            (5, 4, 4, 4) // Пример объекта
+        }
     };
     return new SortCenterWrapper(config);
 });

@@ -98,6 +98,36 @@ namespace SortingCenterAPI.Controllers
                 }
             }
 
+            foreach(var depaletizeNode in _sortCenter.depaletizeNodes)
+            {
+                response.DepaletizeNodes.Add(new LineNodeResponse
+                {
+                    Id = depaletizeNode.Id,
+                    X = depaletizeNode.x,
+                    Y = depaletizeNode.y
+                });
+            }
+
+            foreach (var paletizeNode in _sortCenter.palettizeNodes)
+            {
+                response.PalettizeNodes.Add(new LineNodeResponse
+                {
+                    Id = paletizeNode.Id,
+                    X = paletizeNode.x,
+                    Y = paletizeNode.y
+                });
+            }
+
+
+            foreach (var robotSpawnNode in _sortCenter.robotSpawnNodes)
+            {
+                response.Nodes.Add(new GraphNode
+                {
+                    Id = robotSpawnNode.Id,
+                    X = robotSpawnNode.x,
+                    Y = robotSpawnNode.y
+                });
+            }
 
 
             return Ok(response);
