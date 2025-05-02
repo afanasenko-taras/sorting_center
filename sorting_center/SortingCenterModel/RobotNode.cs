@@ -11,12 +11,12 @@ namespace SortingCenterModel
         public List<PalettizeNode> paletizeNodes { get; set; } = new List<PalettizeNode>();
 
         public RobotNode(int row, int col, int column, int line, int lineNumber)
-            : base(row, col, col, (row - 1) * 11, $"Node_{row}_{column}_{line}_{col}")
+            : base(row, col, col, row * (lineNumber + 1), $"Node_{row}_{column}_{line}_{col}")
         {
         }
 
-        public RobotNode(int row, int col)
-            : base(row, col, col, (row - 1) * 11, $"Node_{row}_{col}")
+        public RobotNode(int row, int col, int lineNumber)
+            : base(row, col, col, row * (lineNumber + 1), $"Node_{row}_{col}")
         {
         }
 

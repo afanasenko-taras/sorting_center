@@ -33,7 +33,7 @@ namespace SortingCenterModel
         {
             if (!robotNodes.ContainsKey(row))
                 robotNodes.Add(row, new Dictionary<int, RobotNode>());
-            robotNodes[row].Add(v, new RobotNode(row, v));
+            robotNodes[row].Add(v, new RobotNode(row, v, sortConfig.lineNumber));
             v++;
         }
 
@@ -138,17 +138,17 @@ namespace SortingCenterModel
             
             foreach (var point in sortConfig.robotSpawnPoints)
             {
-                robotSpawnNodes.Add(new RobotSpawnNode(point.row, point.col, point.join_row, point.join_col));
-                robotNodes[point.join_row][point.join_col].AddLinkedNode(robotSpawnNodes.Last());
+                robotSpawnNodes.Add(new RobotSpawnNode(point.row, point.col, point.join_row, point.join_col, sortConfig.lineNumber));
+                robotSpawnNodes.Last().AddLinkedNode(robotNodes[point.join_row][point.join_col]);
             }
-            /*
+            
             foreach (var point in sortConfig.depaletizePoints)
             {
                 depaletizeNodes.Add(new DepaletizeNode(point.row, point.col, 
                     point.row, point.col, 
                     $"Depaletize {point.row} {point.col}",
                     point.join_row, point.join_col));
-                robotNodes[point.join_row][point.join_col].depaletizeNodes.Add(depaletizeNodes.Last());
+                robotNodes[point.join_row][point.join_col].getNodes.Add(depaletizeNodes.Last());
             }
 
             foreach (var point in sortConfig.paletizePoint)
@@ -157,10 +157,10 @@ namespace SortingCenterModel
                     point.row, point.col,
                     $"Palettize {point.row} {point.col}",
                     point.join_row, point.join_col));
-                robotNodes[point.join_row][point.join_col].paletizeNodes.Add(palettizeNodes.Last());
+                robotNodes[point.join_row][point.join_col].dropNodes.Add(palettizeNodes.Last());
             }
 
-            */
+            
 
             Console.WriteLine("SIPPJOP");
             /*

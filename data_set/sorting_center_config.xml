@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SortingCenterConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <rowNumber>5</rowNumber>
+  <columnNumber>5</columnNumber>
+  <lineNumber>10</lineNumber>
+  <subRowNumber>10</subRowNumber>
+  <isDoubleLine>false</isDoubleLine>
+  <robotSpawnPoints>
+    <ValueTupleOfInt32Int32Int32Int32>
+      <Item1>-1</Item1>
+      <Item2>54</Item2>
+      <Item3>0</Item3>
+      <Item4>54</Item4>
+    </ValueTupleOfInt32Int32Int32Int32>
+  </robotSpawnPoints>
+  <depaletizePoints>
+    <ValueTupleOfInt32Int32Int32Int32>
+      <Item1>-1</Item1>
+      <Item2>52</Item2>
+      <Item3>0</Item3>
+      <Item4>52</Item4>
+    </ValueTupleOfInt32Int32Int32Int32>
+  </depaletizePoints>
+  <paletizePoint>
+    <ValueTupleOfInt32Int32Int32Int32>
+      <Item1>56</Item1>
+      <Item2>54</Item2>
+      <Item3>5</Item3>
+      <Item4>54</Item4>
+    </ValueTupleOfInt32Int32Int32Int32>
+  </paletizePoint>
+</SortingCenterConfig>

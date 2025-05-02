@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AbstractModel;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SortingCenterAPI.Controllers;
@@ -30,8 +31,6 @@ builder.Services.AddSingleton(provider =>
         columnNumber = 5,
         lineNumber = 10,
         isDoubleLine = false,
-        sorceNumber = 5,
-        trNumber = 5,
         subRowNumber = 10,
         robotSpawnPoints = new List<(int row, int col, int join_row, int join_col)>
         {
@@ -39,13 +38,14 @@ builder.Services.AddSingleton(provider =>
         },
         depaletizePoints = new List<(int row, int col, int join_row, int join_col)>
         {
-            (-1, 3, 1, 3) // Пример объекта
+            (-1, 52, 0, 52) // Пример объекта
         },
         paletizePoint = new List<(int row, int col, int join_row, int join_col)>
         {
-            (5, 4, 4, 4) // Пример объекта
+            (56, 54, 5, 54) // Пример объекта
         }
     };
+    Helper.SerializeXMLToFile(config, "sorting_center_config.xml");
     return new SortCenterWrapper(config);
 });
 

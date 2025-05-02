@@ -12,10 +12,9 @@ namespace SortingCenterModel
         public int rowNumber = 2;
         public int columnNumber = 2;
         public int lineNumber = 10;
-        public bool isDoubleLine = false;
-        public int sorceNumber = 5;
-        public int trNumber = 5;
         public int subRowNumber = 10;
+        public bool isDoubleLine = false;
+
 
         public List<(int row, int col, int join_row, int join_col)> robotSpawnPoints = new List<(int row, int col, int join_row, int join_col)>();
         public List<(int row, int col, int join_row, int join_col)> depaletizePoints = new List<(int row, int col, int join_row, int join_col)>();

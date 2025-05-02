@@ -12,16 +12,22 @@
             stroke-width: 1.5px;
         }
 
+        .line-node {
+            fill: #ffcc00;
+            stroke: #000;
+            stroke-width: 1.5px;
+        }
+
         .link {
             fill: none;
             stroke: #999;
             stroke-opacity: 0.6;
             stroke-width: 1.5px;
         }
+
         .get-edge {
             stroke: #1f77b4; /* Синий цвет для GetEdges */
             stroke-width: 2px;
-            stroke-dasharray: 5, 5; /* Пунктирная линия */
         }
 
         .drop-edge {
@@ -62,7 +68,7 @@
 
                 const spacing = 15; // Расстояние между узлами
                 const offsetX = 20; // Отступ по оси X
-                const offsetY = 180; // Отступ по оси Y
+                const offsetY = 30; // Отступ по оси Y
 
 
 
@@ -107,15 +113,22 @@
 
 
                 // Отображение узлов
+                // Отображение узлов
                 const node = svg.append("g")
                     .attr("class", "nodes")
-                    .selectAll("circle")
+                    .selectAll("path")
                     .data(nodes)
-                    .enter().append("circle")
-                    .attr("class", "node")
-                    .attr("r", nodeRadius)
-                    .attr("cx", d => scaleCoordinate(d.x, spacing, offsetX))
-                    .attr("cy", d => scaleCoordinate(d.y, spacing, offsetY));
+                    .enter().append("path")
+                    .attr("class", d => d.isRobotSpawn ? "node robot-spawn" : "node")
+                    .attr("d", d => d.isRobotSpawn
+                        ? "M -6,6 L 6,6 L 0,-6 Z" // Треугольник для RobotSpawn
+                        : d3.symbol().type(d3.symbolCircle).size(50)()) // Круг для остальных
+                    .attr("transform", d => `translate(${scaleCoordinate(d.x, spacing, offsetX)}, ${scaleCoordinate(d.y, spacing, offsetY)})`);
+
+                node.append("title")
+                    .text(d => d.id);
+
+
 
                 node.append("title")
                     .text(d => d.id);
@@ -123,18 +136,19 @@
                 // Отображение LineNodes
                 const lineNode = svg.append("g")
                     .attr("class", "line-nodes")
-                    .selectAll("rect")
+                    .selectAll("path")
                     .data(lineNodes)
-                    .enter().append("rect")
+                    .enter().append("path")
                     .attr("class", "line-node")
-                    .attr("width", squareSize)
-                    .attr("height", squareSize)
-                    .attr("x", d => scaleCoordinate(d.x, spacing, offsetX) - squareSize / 2)
-                    .attr("y", d => scaleCoordinate(d.y, spacing, offsetY) - squareSize / 2)
-                    .attr("fill", "#ffcc00");
+                    .attr("d", d => d.isPaletize
+                        ? "M 0,-7 L 7,0 L 0,7 L -7,0 Z" // Ромб для isPaletize
+                        : "M -3,-3 L 3,-3 L 3,3 L -3,3 Z") // Квадрат для остальных
+                    .attr("transform", d => `translate(${scaleCoordinate(d.x, spacing, offsetX)}, ${scaleCoordinate(d.y, spacing, offsetY)})`)
+                    .attr("fill", "#ff0000");
 
                 lineNode.append("title")
                     .text(d => d.id);
+
 
                 svg.append("defs")
                     .append("marker")

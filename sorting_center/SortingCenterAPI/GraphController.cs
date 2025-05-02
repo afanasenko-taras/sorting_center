@@ -3,6 +3,7 @@ using SortingCenterAPI.Models;
 using SortingCenterModel;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace SortingCenterAPI.Controllers
 {
@@ -13,6 +14,7 @@ namespace SortingCenterAPI.Controllers
         public string Id { get; set; }
         public int X { get; set; } // Добавлено
         public int Y { get; set; } // Добавлено
+        public bool isRobotSpawn { get; set; } = false; // Добавлено
     }
 
     [JsonSerializable(type: typeof(GraphEdge))]
@@ -100,21 +102,23 @@ namespace SortingCenterAPI.Controllers
 
             foreach(var depaletizeNode in _sortCenter.depaletizeNodes)
             {
-                response.DepaletizeNodes.Add(new LineNodeResponse
+                response.LineNodes.Add(new LineNodeResponse
                 {
                     Id = depaletizeNode.Id,
                     X = depaletizeNode.x,
-                    Y = depaletizeNode.y
+                    Y = depaletizeNode.y,
+                    isPaletize = true
                 });
             }
 
             foreach (var paletizeNode in _sortCenter.palettizeNodes)
             {
-                response.PalettizeNodes.Add(new LineNodeResponse
+                response.LineNodes.Add(new LineNodeResponse
                 {
                     Id = paletizeNode.Id,
                     X = paletizeNode.x,
-                    Y = paletizeNode.y
+                    Y = paletizeNode.y,
+                    isPaletize = true
                 });
             }
 
@@ -125,8 +129,21 @@ namespace SortingCenterAPI.Controllers
                 {
                     Id = robotSpawnNode.Id,
                     X = robotSpawnNode.x,
-                    Y = robotSpawnNode.y
+                    Y = robotSpawnNode.y,
+                    isRobotSpawn = true
                 });
+            }
+
+            foreach (var node in _sortCenter.robotSpawnNodes)
+            {
+                foreach (var linkedNode in node.nextNodes)
+                {
+                    response.Edges.Add(new GraphEdge
+                    {
+                        Source = node.Id,
+                        Target = linkedNode.Id
+                    });
+                }
             }
 
 
