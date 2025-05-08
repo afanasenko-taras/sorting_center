@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SortingCenterModel
 {
-    class Box
+    public class Box
     {
+        public int sku = 0;
     }
 }

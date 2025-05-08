@@ -32,17 +32,17 @@ builder.Services.AddSingleton(provider =>
         lineNumber = 10,
         isDoubleLine = false,
         subRowNumber = 10,
-        robotSpawnPoints = new List<(int row, int col, int join_row, int join_col)>
+        robotSpawnPoints = new List<JoinPoint>
         {
-            (-1, 54, 0, 54) // Пример объекта
+            new JoinPoint(-1, 22, 0, 22) // Пример объекта
         },
-        depaletizePoints = new List<(int row, int col, int join_row, int join_col)>
+        depaletizePoints = new List<JoinPoint>
         {
-            (-1, 52, 0, 52) // Пример объекта
+            new JoinPoint(-1, 11, 0, 11) // Пример объекта
         },
-        paletizePoint = new List<(int row, int col, int join_row, int join_col)>
+        paletizePoint = new List<JoinPoint>
         {
-            (56, 54, 5, 54) // Пример объекта
+             new JoinPoint(58, 44, 7, 44) // Пример объекта
         }
     };
     Helper.SerializeXMLToFile(config, "sorting_center_config.xml");

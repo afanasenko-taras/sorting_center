@@ -34,14 +34,14 @@ namespace AbstractModel
 
     public abstract class FastAbstractWrapper
     {
-        public Dictionary<string, FastAbstractObject> objects = new Dictionary<string, FastAbstractObject>();
+        protected Dictionary<string, FastAbstractObject> objects = new Dictionary<string, FastAbstractObject>();
         
         protected SortedList<TimeSpan, FastAbstractEvent> eventList = new SortedList<TimeSpan, FastAbstractEvent>();
         protected Dictionary<string, TimeSpan> objectsEventTime = new Dictionary<string, TimeSpan>();
         public TimeSpan updatedTime;
         private HashSet<string> objectsKeyForUpdate;
 
-        public Action<string> writeDebug = Console.WriteLine;
+        protected Action<string> writeDebug = Console.WriteLine;
         public Action<string> writeError = Console.WriteLine;
 
         public bool isDebug = false;
@@ -74,6 +74,8 @@ namespace AbstractModel
 
         protected TimeSpan AddEvent(TimeSpan timeSpan, FastAbstractEvent modelEvent, string objUid = null)
         {
+            WriteDebug($"Event added {timeSpan} {modelEvent} {objUid}");
+
             if (timeSpan < updatedTime)
                 throw new Exception("Time error!!");
             while (eventList.ContainsKey(timeSpan))
@@ -101,7 +103,7 @@ namespace AbstractModel
             {
                 getObject(task.Value.objId);
             }
-            //Console.WriteLine($"{task.Key} {task.Value.GetType()}");
+            WriteDebug($"Run Event {task}");
             task.Value.runEvent(this, task.Key);
             foreach (var objKey in objectsKeyForUpdate)
             {
@@ -115,7 +117,6 @@ namespace AbstractModel
                     AddEvent(ev.Item1, ev.Item2, objKey);
                 }
             }
-
             return true;
         }
 
@@ -128,6 +129,12 @@ namespace AbstractModel
                 AddEvent(ev.Item1, ev.Item2, obj.uid);
             }
         }
+
+        public List<FastAbstractObject> GetFilteredObjects(Func<FastAbstractObject, bool> filterCriteria)
+        {
+            return objects.Values.Where(filterCriteria).ToList();
+        }
+
     }
 
 

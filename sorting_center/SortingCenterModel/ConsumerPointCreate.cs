@@ -9,9 +9,17 @@ namespace SortingCenterModel
 {
     class ConsumerPointCreate : FastAbstractEvent
     {
+        private PalettizeNode pNode;
+
+        public ConsumerPointCreate(PalettizeNode pNode)
+        {
+            this.pNode = pNode;
+        }
+
         public override void runEvent(FastAbstractWrapper wrapper, TimeSpan timeSpan)
         {
-            throw new NotImplementedException();
+            wrapper.addObject(new ConsumerPoint(pNode));
+            wrapper.WriteDebug($"New ConsumerPoint in {pNode.Id} create");
         }
     }
 }

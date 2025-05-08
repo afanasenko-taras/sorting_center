@@ -7,16 +7,46 @@ using System.Threading.Tasks;
 
 namespace SortingCenterModel
 {
-    class SourcePoint : FastAbstractObject
+    public class SourcePoint : FastAbstractObject
     {
+        private SortCenterWrapper sortCenterWrapper;
+        public Queue<int> fifoQueue = new Queue<int> ();
+        public readonly DepaletizeNode dNode;
+        public int currentSku = -1;
+
+
+        public void FillQueue(int count, int sku)
+        {
+            currentSku = sku;
+            for (int i = 0; i < count; i++)
+            {
+                fifoQueue.Enqueue(sku);
+            }
+            var log = new EventLog(sortCenterWrapper.updatedTime, sortCenterWrapper.updatedTime, uid, "startDepalletize", dNode.Id, dNode.Id, sku, count.ToString(), uid);
+            sortCenterWrapper.logs_2.Add(log);
+        }
+
+
+        public SourcePoint(SortCenterWrapper sortCenterWrapper, DepaletizeNode dNode)
+        {
+            this.sortCenterWrapper = sortCenterWrapper;
+            this.dNode = dNode;
+        }
+
         public override (TimeSpan, FastAbstractEvent) getNearestEvent()
         {
-            throw new NotImplementedException();
+            return (TimeSpan.MaxValue, null);
         }
 
         public override void Update(TimeSpan timeSpan)
         {
-            throw new NotImplementedException();
+
+        }
+
+        internal void finishDepaletize(TimeSpan timeSpan)
+        {
+            var log = new EventLog(timeSpan, timeSpan, uid, "finishDepalletize", dNode.Id, dNode.Id, currentSku, "0", uid);
+            sortCenterWrapper.logs_2.Add(log);
         }
     }
 }
