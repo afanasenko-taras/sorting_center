@@ -23,12 +23,15 @@ namespace SortingCenterModel
 
             foreach(SourcePoint sourcePoint in wrapper.allSourcePoint)
             {
-                int paleteSize = 50;
+                int paleteSize = wrapper.sortConfig.palleteSize;
                 if (sourcePoint.fifoQueue.Count == 0)
                 {
                     (int minSku, int countSku) =  wrapper.GetMinSkuCount();
-                    sourcePoint.FillQueue(paleteSize, minSku);
-                    wrapper.WriteDebug($"{sourcePoint.dNode.Id} add {paleteSize} sku {minSku}");
+                    if (countSku < wrapper.sortConfig.minNumberBox)
+                    {
+                        sourcePoint.FillQueue(paleteSize, minSku);
+                        wrapper.WriteDebug($"{sourcePoint.dNode.Id} add {paleteSize} sku {minSku}");
+                    }
                 }
             }
         }

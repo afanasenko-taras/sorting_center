@@ -4,18 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SortingCenterModel
 {
-    class ConsumerPoint : FastAbstractObject
+    public class ConsumerPoint : FastAbstractObject
     {
-        private PalettizeNode pNode;
-        private Queue<(int sku, TransportRobot? robot)> fifoQueue = new Queue<(int, TransportRobot?)>(); // Очередь FIFO
+        public PalettizeNode pNode;
+        public Queue<(int sku, TransportRobot? robot)> fifoQueue = new Queue<(int, TransportRobot?)>(); // Очередь FIFO
         private Random random = new Random(); // Генератор случайных чисел
+        private SortCenterWrapper wrapper;
 
-        public ConsumerPoint(PalettizeNode pNode)
+        public ConsumerPoint(PalettizeNode pNode, SortCenterWrapper wrapper)
         {
             this.pNode = pNode;
+            this.wrapper = wrapper;
             FillQueue(1000);
         }
 
@@ -24,9 +27,11 @@ namespace SortingCenterModel
         {
             for (int i = 0; i < count; i++)
             {
-                int randomValue = random.Next(0, 35); // Случайное значение от 0 до 34
+                int randomValue = random.Next(0, wrapper.sortConfig.skuSize); // Случайное значение от 0 до 34
                 fifoQueue.Enqueue((randomValue, null));
             }
+            var log = new EventLog(wrapper.updatedTime, wrapper.updatedTime, uid, "startPalletize ", pNode.Id, pNode.Id, -1, count.ToString(), uid);
+            wrapper.logs_2.Add(log);
         }
 
         // Метод для извлечения элемента из очереди

@@ -301,8 +301,9 @@ namespace SortingCenterModel
             {
                 reserv = new Reservation();
                 reservations.Add(reserv);
+                reserv.robotNodes.Add(
                 AddNode(sortConfig.rowNumber + 2, column * (sortConfig.lineNumber + 1),
-                    column * (sortConfig.lineNumber + 1), current_row, $"{rowsName[sortConfig.rowNumber + 2]}.{1}.{column + 1}");
+                    column * (sortConfig.lineNumber + 1), current_row, $"{rowsName[sortConfig.rowNumber + 2]}.{1}.{column + 1}"));
             }
 
 
@@ -427,7 +428,7 @@ namespace SortingCenterModel
             allRobotNodes.AddRange(robotSpawnNodes);
             shortestPaths = RobotNodeDistanceCalculator.CalculateAllPairsShortestPaths(allRobotNodes);
 
-            for (int i = 0; i < 35; i++)
+            for (int i = 0; i < sortConfig.skuSize; i++)
             {
                 skuCount[i] = 0;
             }

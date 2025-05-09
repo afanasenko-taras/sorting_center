@@ -32,7 +32,8 @@ namespace SortingCenterModel
             wrapper.SetupDebug(outputFile.WriteLine);
             wrapper.isDebug = true;
 
-            while (wrapper.Next() & wrapper.updatedTime < TimeSpan.FromDays(1))
+            while (wrapper.Next() & wrapper.updatedTime < TimeSpan.FromDays(5) & 
+                    ((ConsumerPoint)wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0]).fifoQueue.Count > 0)
             {
                 foreach (var robot in wrapper.robots)
                 { 

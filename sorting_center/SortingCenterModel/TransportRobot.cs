@@ -13,13 +13,17 @@ namespace SortingCenterModel
         Waiting,           // Ждет
         Moving,            // Движется
         PickingUpFromDisassemblyChannel,         // Берет
-        PlaceBoxIntoChannel          // Выгружает
+        PlaceBoxIntoChannel,
+        PickingUpFromChannel,// Выгружает
+        PlaceBoxIntoPalletAssembly
     }
 
     public enum TransportRobotTask
     {
-        Depaltize,           // Ждет
-        MoveBoxToLine
+        Depaltize,           
+        MoveBoxToLine,
+        MoveBoxToPaletize,
+        NoTask
     }
 
 
@@ -39,6 +43,9 @@ namespace SortingCenterModel
 
 
         public TimeSpan _endAt { get; private set; } = TimeSpan.Zero;
+
+        private ConsumerPoint consumer;
+
         public TimeSpan _startAt { get; private set; }
 
         // Метод для изменения состояния
@@ -86,9 +93,17 @@ namespace SortingCenterModel
             {
                 return (_endAt, new EndPickBoxFromDisassemblyChannel(this));
             }
+            else if (CurrentState == TransportRobotState.PickingUpFromChannel)
+            {
+                return (_endAt, new EndPickingUpFromChannel(this));
+            }
             else if (CurrentState == TransportRobotState.PlaceBoxIntoChannel)
             {
                 return (_endAt, new EndPlaceBoxIntoChannel(this));
+            }
+            else if (CurrentState == TransportRobotState.PlaceBoxIntoPalletAssembly)
+            {
+                return (_endAt, new EndPlaceBoxIntoPalletAssembly(this));
             }
             return (TimeSpan.MaxValue, null);
         }
@@ -119,11 +134,20 @@ namespace SortingCenterModel
         }
 
 
-        internal void AddCommandDropToLine(TeleportLine teleportLine)
+        internal void AddCommandDropToLine(TeleportLine line)
         {
-            commandList.AddCommand(new StartPlaceBoxIntoChannel(this, teleportLine));
+            commandList.AddCommand(new StartPlaceBoxIntoChannel(this, line));
         }
 
+        internal void AddCommandPickBoxFromChannel(TeleportLine line)
+        {
+            commandList.AddCommand(new StartPickBoxFromChannel(this, line));
+        }
+
+        internal void AddCommandPlaceBoxIntoPalletAssembly(ConsumerPoint consumer)
+        {
+            commandList.AddCommand(new StartPlaceBoxIntoPalletAssembly(this, consumer));
+        }
 
         public void StartMoving(TimeSpan timeSpan, RobotNode nextNode)
         {
@@ -148,6 +172,17 @@ namespace SortingCenterModel
             wrapper.logs_2.Add(log);
         }
 
+        internal void StartPickBoxFromChannel(TimeSpan timeSpan, TeleportLine teleportLine)
+        {
+            commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
+            CurrentState = TransportRobotState.PickingUpFromChannel;
+            _startAt = timeSpan;
+            _endAt = timeSpan + TimeSpan.FromSeconds(wrapper.sortConfig.pickBoxFromChannelTime);
+            this.teleportLine = teleportLine;
+            var log = new EventLog(_startAt, _endAt, uid, "start_movebox2bot", teleportLine.endLine.Id, currentNode.Id, teleportLine.boxes.Peek().sku, "", "");
+            wrapper.logs_2.Add(log);
+        }
+
         internal void StartPlaceBoxIntoChannel(TimeSpan timeSpan, TeleportLine teleportLine)
         {
             commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
@@ -156,6 +191,18 @@ namespace SortingCenterModel
             _endAt = timeSpan + TimeSpan.FromSeconds(wrapper.sortConfig.placeBoxIntoChannelTime);
             this.teleportLine = teleportLine;
             var log = new EventLog(_startAt, _endAt, uid, "start_movebox2channel", currentNode.Id, teleportLine.startLine.Id, currentBox.sku, "", "");
+            wrapper.logs_2.Add(log);
+        }
+
+
+        internal void StartPlaceBoxIntoPalletAssembly(TimeSpan timeSpan, ConsumerPoint consumer)
+        {
+            commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
+            CurrentState = TransportRobotState.PlaceBoxIntoPalletAssembly;
+            _startAt = timeSpan;
+            _endAt = timeSpan + TimeSpan.FromSeconds(wrapper.sortConfig.placeBoxIntoPalletAssemblyTime);
+            this.consumer = consumer;
+            var log = new EventLog(_startAt, _endAt, uid, "start_movebox2tr", currentNode.Id, consumer.pNode.Id, currentBox.sku, "", consumer.pNode.Id);
             wrapper.logs_2.Add(log);
         }
 
@@ -206,6 +253,37 @@ namespace SortingCenterModel
             getSourcePoint = null;
         }
 
+        internal void EndPickingUpFromChannel(TimeSpan timeSpan)
+        {
+            _startAt = timeSpan;
+            _endAt = timeSpan;
+            currentBox = teleportLine.boxes.Dequeue();
+            CurrentState = TransportRobotState.Waiting;
+            CurrentTask = TransportRobotTask.MoveBoxToPaletize;
+            var log = new EventLog(_startAt, _endAt, uid, "end_movebox2bot", teleportLine.endLine.Id, currentNode.Id, currentBox.sku, "", "");
+            wrapper.logs_2.Add(log);
+            teleportLine = null;
+        }
+
+        internal void EndPlaceBoxIntoPalletAssembly(TimeSpan timeSpan)
+        {
+            _startAt = timeSpan;
+            _endAt = timeSpan;
+            var bx = consumer.fifoQueue.Dequeue();
+            //TODO Need check for equal
+            CurrentState = TransportRobotState.Waiting;
+            CurrentTask = TransportRobotTask.NoTask;
+            var log = new EventLog(_startAt, _endAt, uid, "end_movebox2tr", currentNode.Id, consumer.pNode.Id, currentBox.sku, "", consumer.pNode.Id);
+            wrapper.logs_2.Add(log);
+            if (consumer.fifoQueue.Count == 0)
+            {
+                log = new EventLog(_startAt, _endAt, consumer.uid, "finishPalletize", consumer.pNode.Id, consumer.pNode.Id, -1, "", consumer.pNode.Id);
+                wrapper.logs_2.Add(log);
+            }
+
+            consumer = null;
+            currentBox = null;
+        }
 
 
 

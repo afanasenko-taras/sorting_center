@@ -18,7 +18,7 @@ namespace SortingCenterModel
 
         public override void runEvent(FastAbstractWrapper wrapper, TimeSpan timeSpan)
         {
-            wrapper.addObject(new ConsumerPoint(pNode));
+            wrapper.addObject(new ConsumerPoint(pNode, wrapper as SortCenterWrapper));
             wrapper.WriteDebug($"New ConsumerPoint in {pNode.Id} create");
         }
     }

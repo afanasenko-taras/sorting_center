@@ -38,11 +38,17 @@ namespace SortingCenterModel
         public int subRowNumber = 10;
         public bool isDoubleLine = false;
 
+        public int palleteSize = 2000;
+        public int skuSize = 1;
+        public int minNumberBox = 20;
+
+
         public double pickBoxFromDisassemblyChannelTime = 3.0; //Time to pick a box from the pallet disassembly channel.
         public double placeBoxIntoPalletAssemblyTime = 3.0; //Time to place a box into the pallet assembly channel.
         public double placeBoxIntoChannelTime = 3.0; //Time to place a box into a channel.
         public double pickBoxFromChannelTime = 3.0; //Time to pick a box from a channel.
         public double robotSpeedMs = 1.0; //Robot movement speed in meters per second (e.g., 0.5 for 0.5 m/s).
+
 
 
         public List<JoinPoint> robotSpawnPoints = new List<JoinPoint>();

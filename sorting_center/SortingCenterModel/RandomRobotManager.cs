@@ -22,28 +22,54 @@ namespace SortingCenterModel
                 {
                     if (waitingRobot.commandList.commands.Count() == 0)
                     {
-                        if (waitingRobot.currentBox == null) { //we try depaletize in this route
+                        if (waitingRobot.currentBox == null) { 
 
                             RobotNode nextNode = null;
-                            foreach(var source in _wrapper.allSourcePoint)
+                            if (_wrapper.allSourcePoint.Any(x => x.fifoQueue.Count > 0)) //we try depaletize in this route
                             {
-
-                                var nodeGet = _wrapper.robotNodes[source.dNode.join_row][source.dNode.join_col];
-                                if (_wrapper.shortestPaths[waitingRobot.currentNode][nodeGet].path.Count > 1)
+                                foreach (var source in _wrapper.allSourcePoint)
                                 {
-                                    nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][nodeGet].path[1];
-                                    if (waitingRobot.currentNode.nextNodes.Contains(nextNode))
+
+                                    var nodeGet = _wrapper.robotNodes[source.dNode.join_row][source.dNode.join_col];
+                                    if (_wrapper.shortestPaths[waitingRobot.currentNode][nodeGet].path.Count > 1)
                                     {
-                                        waitingRobot.AddCommandMove(nextNode); //we move to the path to Depaletize Node
+                                        nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][nodeGet].path[1];
+                                        if (waitingRobot.currentNode.nextNodes.Contains(nextNode))
+                                        {
+                                            waitingRobot.AddCommandMove(nextNode); //we move to the path to Depaletize Node
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        waitingRobot.AddCommandGetFromSource(source); //we in Depaletize Node 
                                         break;
                                     }
-                                }
-                                else
+                                } 
+                            } else // we have too start Paletize
+                            {
+                                var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
+                                var skuForPeek = consumer.fifoQueue.Peek().sku;
+                                var line = _wrapper.teleportLinesList.Find(x=>x.boxes.Count()>0 && x.boxes.Peek().sku == skuForPeek);
+                                if (line != null)
                                 {
-                                    waitingRobot.AddCommandGetFromSource(source); //we in Depaletize Node 
-                                    break;
+                                    if (_wrapper.shortestPaths[waitingRobot.currentNode][line.endLine].path.Count > 1)
+                                    {
+                                        nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][line.endLine].path[1];
+                                        if (waitingRobot.currentNode.nextNodes.Contains(nextNode))
+                                        {
+                                            waitingRobot.AddCommandMove(nextNode); //we move to the path to Depaletize Node
+                                        }
+                                    }
+                                    else
+                                    {                                      
+                                        waitingRobot.AddCommandPickBoxFromChannel(line);
+                                    }
+                                } else
+                                {
+                                    Console.WriteLine("need dig here");
                                 }
-                            } 
+                            }
                         } 
                         else //robot have box
                         {
@@ -69,8 +95,23 @@ namespace SortingCenterModel
                                 {
                                     waitingRobot.AddCommandDropToLine(waitingRobot.teleportLine);
                                 }
-
-
+                            }
+                            else if (waitingRobot.CurrentTask == TransportRobotTask.MoveBoxToPaletize)
+                            {
+                                var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
+                                var nodeDrop = _wrapper.robotNodes[consumer.pNode.join_col][consumer.pNode.join_row];
+                                if (_wrapper.shortestPaths[waitingRobot.currentNode][nodeDrop].path.Count > 1)
+                                {
+                                    var nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][nodeDrop].path[1];
+                                    if (waitingRobot.currentNode.nextNodes.Contains(nextNode))
+                                    {
+                                        waitingRobot.AddCommandMove(nextNode); //we move to the path to Depaletize Node
+                                    }
+                                }
+                                else
+                                {
+                                    waitingRobot.AddCommandPlaceBoxIntoPalletAssembly(consumer);
+                                }
                             }
                         }
                     }
