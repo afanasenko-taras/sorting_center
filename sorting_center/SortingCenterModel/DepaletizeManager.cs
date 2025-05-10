@@ -27,7 +27,7 @@ namespace SortingCenterModel
                 if (sourcePoint.fifoQueue.Count == 0)
                 {
                     (int minSku, int countSku) =  wrapper.GetMinSkuCount();
-                    if (countSku < wrapper.sortConfig.minNumberBox)
+                    if (countSku < wrapper.sortConfig.minSku)
                     {
                         sourcePoint.FillQueue(paleteSize, minSku);
                         wrapper.WriteDebug($"{sourcePoint.dNode.Id} add {paleteSize} sku {minSku}");

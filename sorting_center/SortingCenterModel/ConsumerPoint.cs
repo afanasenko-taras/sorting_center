@@ -19,15 +19,27 @@ namespace SortingCenterModel
         {
             this.pNode = pNode;
             this.wrapper = wrapper;
-            FillQueue(1000);
+            FillQueue(5000);
         }
 
         // Метод для заполнения очереди случайными значениями
         public void FillQueue(int count)
         {
+            //Dictionary<int, int> countSku = new Dictionary<int, int>();
             for (int i = 0; i < count; i++)
             {
                 int randomValue = random.Next(0, wrapper.sortConfig.skuSize); // Случайное значение от 0 до 34
+                /*
+                if (!countSku.ContainsKey(randomValue))
+                    countSku[randomValue] = 0;
+                while (countSku[randomValue] == 20)
+                {
+                    randomValue = random.Next(0, wrapper.sortConfig.skuSize); // Случайное значение от 0 до 34
+                    if (!countSku.ContainsKey(randomValue))
+                        countSku[randomValue] = 0;
+                }
+                countSku[randomValue]++;
+                */
                 fifoQueue.Enqueue((randomValue, null));
             }
             var log = new EventLog(wrapper.updatedTime, wrapper.updatedTime, uid, "startPalletize ", pNode.Id, pNode.Id, -1, count.ToString(), uid);

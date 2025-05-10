@@ -15,6 +15,7 @@ namespace SortingCenterModel
             //Helper.SerializeXMLToFile(sortConfig, "sorting_center_config.xml");
 
             SortingCenterConfig sortConfig = Helper.DeserializeXMLFromFile<SortingCenterConfig>("sorting_center_config.xml");
+            Helper.SerializeXMLToFile(sortConfig, "sorting_center_config.xml");
 
             SortCenterWrapper wrapper = new SortCenterWrapper(sortConfig);
             TimeSpan lastEvent = TimeSpan.Zero;
@@ -32,7 +33,7 @@ namespace SortingCenterModel
             wrapper.SetupDebug(outputFile.WriteLine);
             wrapper.isDebug = true;
 
-            while (wrapper.Next() & wrapper.updatedTime < TimeSpan.FromDays(5) & 
+            while (wrapper.Next() & //wrapper.updatedTime < TimeSpan.FromDays(5) & 
                     ((ConsumerPoint)wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0]).fifoQueue.Count > 0)
             {
                 foreach (var robot in wrapper.robots)
@@ -57,7 +58,7 @@ namespace SortingCenterModel
             }
             eventLogFile.Close();
 
-            eventLogFile = new StreamWriter("store-log2.csv");
+            eventLogFile = new StreamWriter($"store-log-{sortConfig.shutleNumber}-{sortConfig.skuSize}-{sortConfig.palleteSize}.csv");
             eventLogFile.WriteLine("ID,startTime,endTime,botId,command,Start,End,boxType,channel,TrID");
             for (int i = 0; i < wrapper.logs_2.Count(); i++)
             {

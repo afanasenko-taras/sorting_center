@@ -23,7 +23,8 @@ namespace SortingCenterModel
         Depaltize,           
         MoveBoxToLine,
         MoveBoxToPaletize,
-        NoTask
+        NoTask,
+        MovedForFreeLine
     }
 
 
@@ -38,7 +39,10 @@ namespace SortingCenterModel
         public SourcePoint getSourcePoint = null;
         public TeleportLine teleportLine = null;
         public double speed = 1;
-        public TimeSpan operTime = TimeSpan.FromSeconds(1);
+
+        public RobotNode targetNodeForMove = null;
+        public int targetSkuForFree = -1;
+
         public CommandList commandList;
 
 
@@ -52,6 +56,11 @@ namespace SortingCenterModel
         public void ChangeState(TransportRobotState newState)
         {
             CurrentState = newState;
+        }
+
+        public void ChangeTask(TransportRobotTask newTask)
+        {
+            CurrentTask = newTask;
         }
 
         public TransportRobot(RobotNode node, SortCenterWrapper wrapper, TimeSpan createTime)
@@ -259,7 +268,8 @@ namespace SortingCenterModel
             _endAt = timeSpan;
             currentBox = teleportLine.boxes.Dequeue();
             CurrentState = TransportRobotState.Waiting;
-            CurrentTask = TransportRobotTask.MoveBoxToPaletize;
+            if (CurrentTask != TransportRobotTask.MovedForFreeLine)
+                CurrentTask = TransportRobotTask.MoveBoxToPaletize;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2bot", teleportLine.endLine.Id, currentNode.Id, currentBox.sku, "", "");
             wrapper.logs_2.Add(log);
             teleportLine = null;
@@ -270,7 +280,8 @@ namespace SortingCenterModel
             _startAt = timeSpan;
             _endAt = timeSpan;
             var bx = consumer.fifoQueue.Dequeue();
-            //TODO Need check for equal
+            wrapper.skuCount[bx.sku]--;
+            Console.WriteLine($"Put {bx.sku} to {currentBox.sku} consumer.lenght {consumer.fifoQueue.Count} {wrapper.skuCount[bx.sku]}");
             CurrentState = TransportRobotState.Waiting;
             CurrentTask = TransportRobotTask.NoTask;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2tr", currentNode.Id, consumer.pNode.Id, currentBox.sku, "", consumer.pNode.Id);

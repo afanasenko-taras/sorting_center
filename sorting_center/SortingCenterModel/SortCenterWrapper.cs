@@ -113,7 +113,7 @@ namespace SortingCenterModel
 
         public void TransportRobotSpawnPointCreate()
         {
-            lastAdd = AddEvent(lastAdd, new TransportRobotSpawnPointsCreate(10));
+            lastAdd = AddEvent(lastAdd, new TransportRobotSpawnPointsCreate(sortConfig.shutleNumber));
         }
 
         public void palettizeNodesCreate()
@@ -404,6 +404,14 @@ namespace SortingCenterModel
             IEnumerable<TransportRobot> result = objects.Values
                 .OfType<TransportRobot>()
                 .Where(robot => robot.CurrentState == TransportRobotState.Waiting);
+            return result;
+        }
+
+        internal IEnumerable<TransportRobot> GetRobotByTask(TransportRobotTask task)
+        {
+            IEnumerable<TransportRobot> result = objects.Values
+                .OfType<TransportRobot>()
+                .Where(robot => robot.CurrentTask == task);
             return result;
         }
 

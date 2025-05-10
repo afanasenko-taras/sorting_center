@@ -38,9 +38,11 @@ namespace SortingCenterModel
         public int subRowNumber = 10;
         public bool isDoubleLine = false;
 
-        public int palleteSize = 2000;
-        public int skuSize = 1;
-        public int minNumberBox = 20;
+        public int palleteSize = 20;
+        public int skuSize = 100;
+        public int minSku = 5;
+
+        public int shutleNumber = 1;
 
 
         public double pickBoxFromDisassemblyChannelTime = 3.0; //Time to pick a box from the pallet disassembly channel.
