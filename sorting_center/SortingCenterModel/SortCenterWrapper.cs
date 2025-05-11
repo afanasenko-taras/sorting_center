@@ -116,19 +116,19 @@ namespace SortingCenterModel
             lastAdd = AddEvent(lastAdd, new TransportRobotSpawnPointsCreate(sortConfig.shutleNumber));
         }
 
-        public void palettizeNodesCreate()
+        public void palettizeNodesCreate(FileQueue fileQueue)
         {
-            foreach(var pNode in palettizeNodes)
+            foreach (var pNode in palettizeNodes)
             {
-                lastAdd = AddEvent(lastAdd, new ConsumerPointCreate(pNode));
+                lastAdd = AddEvent(lastAdd, new ConsumerPointCreate(pNode, fileQueue));
             }
         }
 
-        public void depalettizeNodesCreate()
+        public void depalettizeNodesCreate(List<int> uniqueNumbers)
         {
             foreach (var dNode in depaletizeNodes)
             {
-                lastAdd = AddEvent(lastAdd, new SourcePointCreate(dNode));
+                lastAdd = AddEvent(lastAdd, new SourcePointCreate(dNode, uniqueNumbers));
             }
         }
 
@@ -423,7 +423,15 @@ namespace SortingCenterModel
             }
         }
 
-        public SortCenterWrapper(SortingCenterConfig sortConfig)
+
+        private int robotUid = 0;
+        internal string GetNewUid()
+        {
+            robotUid++;
+            return  "bot" + robotUid.ToString("D2");
+        }
+
+        public SortCenterWrapper(SortingCenterConfig sortConfig, List<int> uniqueNumbers)
         {
             this.sortConfig = sortConfig;
             TimeSpan startPoint = TimeSpan.Zero;
@@ -436,7 +444,7 @@ namespace SortingCenterModel
             allRobotNodes.AddRange(robotSpawnNodes);
             shortestPaths = RobotNodeDistanceCalculator.CalculateAllPairsShortestPaths(allRobotNodes);
 
-            for (int i = 0; i < sortConfig.skuSize; i++)
+            foreach (int i in uniqueNumbers)
             {
                 skuCount[i] = 0;
             }

@@ -83,7 +83,7 @@ namespace SortingCenterModel
                     else
                     {
                         var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
-                        var skuForPeek = consumer.fifoQueue.Peek().sku;
+                        var skuForPeek = consumer.FifoQueue.Peek();
                         if (robot.currentBox == null)
                         {
 
@@ -166,7 +166,7 @@ namespace SortingCenterModel
                             } else // we have too start Paletize
                             {
                                 var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
-                                var skuForPeek = consumer.fifoQueue.Peek().sku;
+                                var skuForPeek = consumer.FifoQueue.Peek();
                                 var line = _wrapper.teleportLinesList.Find(x=>x.boxes.Count()>0 && x.boxes.Peek().sku == skuForPeek);
                                 if (line != null)
                                 {
@@ -232,7 +232,7 @@ namespace SortingCenterModel
                                 }
                                 else
                                 {
-                                    if (waitingRobot.currentBox.sku == consumer.fifoQueue.Peek().sku)
+                                    if (waitingRobot.currentBox.sku == consumer.FifoQueue.Peek())
                                     {
                                         waitingRobot.AddCommandPlaceBoxIntoPalletAssembly(consumer);
                                     } else

@@ -65,6 +65,7 @@ namespace SortingCenterModel
 
         public TransportRobot(RobotNode node, SortCenterWrapper wrapper, TimeSpan createTime)
         {
+            this.uid = wrapper.GetNewUid();
             this.currentNode = node;
             this.movedTo = node;
             this.wrapper = wrapper;
@@ -279,14 +280,14 @@ namespace SortingCenterModel
         {
             _startAt = timeSpan;
             _endAt = timeSpan;
-            var bx = consumer.fifoQueue.Dequeue();
-            wrapper.skuCount[bx.sku]--;
-            Console.WriteLine($"Put {bx.sku} to {currentBox.sku} consumer.lenght {consumer.fifoQueue.Count} {wrapper.skuCount[bx.sku]}");
+            int sku = consumer.FifoQueue.Dequeue();
+            wrapper.skuCount[sku]--;
+            Console.WriteLine($"Put {sku} to {currentBox.sku} consumer.lenght {consumer.FifoQueue.Count} {wrapper.skuCount[sku]}");
             CurrentState = TransportRobotState.Waiting;
             CurrentTask = TransportRobotTask.NoTask;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2tr", currentNode.Id, consumer.pNode.Id, currentBox.sku, "", consumer.pNode.Id);
             wrapper.logs_2.Add(log);
-            if (consumer.fifoQueue.Count == 0)
+            if (consumer.FifoQueue.Count == 0)
             {
                 log = new EventLog(_startAt, _endAt, consumer.uid, "finishPalletize", consumer.pNode.Id, consumer.pNode.Id, -1, "", consumer.pNode.Id);
                 wrapper.logs_2.Add(log);

@@ -10,8 +10,9 @@ namespace SortingCenterModel
     class SourcePointCreate : FastAbstractEvent
     {
         private DepaletizeNode dNode;
+        private List<int> uniqueNumbers;
 
-        public SourcePointCreate(DepaletizeNode dNode)
+        public SourcePointCreate(DepaletizeNode dNode, List<int> uniqueNumbers)
         {
             this.dNode = dNode;
         }

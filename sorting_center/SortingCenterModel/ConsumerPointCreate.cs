@@ -10,15 +10,17 @@ namespace SortingCenterModel
     class ConsumerPointCreate : FastAbstractEvent
     {
         private PalettizeNode pNode;
+        private FileQueue fileQueue;
 
-        public ConsumerPointCreate(PalettizeNode pNode)
+        public ConsumerPointCreate(PalettizeNode pNode, FileQueue fileQueue)
         {
             this.pNode = pNode;
+            this.fileQueue = fileQueue;
         }
 
         public override void runEvent(FastAbstractWrapper wrapper, TimeSpan timeSpan)
         {
-            wrapper.addObject(new ConsumerPoint(pNode, wrapper as SortCenterWrapper));
+            wrapper.addObject(new ConsumerPoint(pNode, wrapper as SortCenterWrapper, fileQueue));
             wrapper.WriteDebug($"New ConsumerPoint in {pNode.Id} create");
         }
     }
