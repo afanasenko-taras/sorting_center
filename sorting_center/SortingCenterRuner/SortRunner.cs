@@ -13,7 +13,7 @@ namespace SortingCenterModel
 
 
 
-            string folderPath = "simulated"; // Путь к папке с файлами
+            string folderPath = "simulated_light"; // Путь к папке с файлами
             var fileQueue = new FileQueue();
 
             // Загружаем файлы в очередь
@@ -62,8 +62,8 @@ namespace SortingCenterModel
             Console.WriteLine(((ConsumerPoint)wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0]).FifoQueue.IsEmpty);
             outputFile.Close();
 
-            /*
-            StreamWriter eventLogFile = new StreamWriter("store-log.csv");
+            StreamWriter eventLogFile;
+            eventLogFile = new StreamWriter("store-log.csv");
             eventLogFile.WriteLine("ID,startTime,endTime,botId,command,Start,End,boxType,channel,TrID");
             for (int i=0; i< wrapper.logs.Count(); i++)
             {
@@ -71,9 +71,9 @@ namespace SortingCenterModel
                 eventLogFile.WriteLine($"{i},{log.startTime},{log.endTime},{log.botId},{log.command},{log.Start},{log.End},{log.boxType},{log.channel},{log.TrID}");
             }
             eventLogFile.Close();
-            */
+            
 
-            StreamWriter eventLogFile = new StreamWriter($"store-log-{sortConfig.shutleNumber}-{sortConfig.skuSize}-{sortConfig.palleteSize}.csv");
+            eventLogFile = new StreamWriter($"store-log-{sortConfig.shutleNumber}-{sortConfig.skuSize}-{sortConfig.palleteSize}-{folderPath}.csv");
             eventLogFile.WriteLine("ID,startTime,endTime,botId,command,Start,End,boxType,channel,TrID");
             for (int i = 0; i < wrapper.logs_2.Count(); i++)
             {

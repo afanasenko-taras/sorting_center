@@ -132,7 +132,7 @@ namespace SortingCenterModel
             }
             else
             {
-                _endAt = wrapper.updatedTime + TimeSpan.FromSeconds(1);
+                _endAt = wrapper.updatedTime + TimeSpan.FromSeconds(0.2);
                 var log = new EventLog(wrapper.updatedTime, _endAt, uid, "Wait", currentNode.Id, movedTo.Id, 0, "", "");
                 wrapper.logs.Add(log);
             }
@@ -159,16 +159,7 @@ namespace SortingCenterModel
             commandList.AddCommand(new StartPlaceBoxIntoPalletAssembly(this, consumer));
         }
 
-        public void StartMoving(TimeSpan timeSpan, RobotNode nextNode)
-        {
-            commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
-            CurrentState = TransportRobotState.Moving;
-            movedTo = nextNode;
-            _startAt = timeSpan;
-            _endAt = timeSpan + TimeSpan.FromSeconds(CalculateDistance(currentNode, nextNode) / wrapper.sortConfig.robotSpeedMs);
-            var log = new EventLog(_startAt, _endAt, uid, "startMotion", currentNode.Id, movedTo.Id, 0, "", "");
-            wrapper.logs.Add(log);
-        }
+
 
 
         public void StartPickBoxFromDisassemblyChannel(TimeSpan timeSpan, SourcePoint sourcePoint)
@@ -233,8 +224,8 @@ namespace SortingCenterModel
         public void EndMoving(TimeSpan timeSpan)
         {
             wrapper.WriteDebug($"Robot {uid} is coming from {currentNode.Id} to {movedTo.Id}");
-            if (!wrapper.reverceReservation[currentNode].robotNodes.Contains(movedTo))
-                wrapper.SetReservation(currentNode, "", false);
+            //if (!wrapper.reverceReservation[currentNode].robotNodes.Contains(movedTo))
+            //    wrapper.SetReservation(currentNode, "", false);
             currentNode = movedTo;
             _startAt = timeSpan;
             _endAt = timeSpan;
@@ -243,6 +234,21 @@ namespace SortingCenterModel
             wrapper.logs.Add(log);
             wrapper.WriteDebug($"Robot {uid} is coming to {currentNode.x} {currentNode.y} ");
         }
+
+
+        public void StartMoving(TimeSpan timeSpan, RobotNode nextNode)
+        {
+            if (!wrapper.reverceReservation[currentNode].robotNodes.Contains(nextNode))
+                wrapper.SetReservation(currentNode, "", false);
+            commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
+            CurrentState = TransportRobotState.Moving;
+            movedTo = nextNode;
+            _startAt = timeSpan;
+            _endAt = timeSpan + TimeSpan.FromSeconds(CalculateDistance(currentNode, nextNode) / wrapper.sortConfig.robotSpeedMs);
+            var log = new EventLog(_startAt, _endAt, uid, "startMotion", currentNode.Id, movedTo.Id, 0, "", "");
+            wrapper.logs.Add(log);
+        }
+
 
         internal void EndPickBoxFromDisassemblyChannel(TimeSpan timeSpan)
         {

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -13,11 +15,14 @@ namespace SortingCenterModel
         private FileQueue fileQueue;
         private Queue<int> currentDataQueue = new Queue<int>(); // Текущая очередь данных из файла
         private SortCenterWrapper wrapper;
+        private ConsumerPoint consumerPoint;
+        FileData fileData = null;
 
-        public FifoQueueWrapper(FileQueue fileQueue, SortCenterWrapper wrapper)
+        public FifoQueueWrapper(FileQueue fileQueue, SortCenterWrapper wrapper, ConsumerPoint consumerPoint)
         {
             this.fileQueue = fileQueue;
             this.wrapper = wrapper;
+            this.consumerPoint = consumerPoint;
             LoadNextFileIfNeeded();
         }
 
@@ -62,7 +67,7 @@ namespace SortingCenterModel
         {
             get
             {
-                LoadNextFileIfNeeded();
+                LoadNextFileIfNeeded(); 
                 return currentDataQueue.Count == 0 && !fileQueue.HasFiles();
             }
         }
@@ -72,21 +77,40 @@ namespace SortingCenterModel
         {
             while (currentDataQueue.Count == 0 && fileQueue.HasFiles())
             {
-                var fileData = fileQueue.DequeueFile();
+                EventLog log;
+                if (fileData != null)
+                {
+                    log = new EventLog(
+                        wrapper.updatedTime,
+                        wrapper.updatedTime,
+                        consumerPoint.uid,
+                        "finishPalletize",
+                        $"Unloaded file {fileData.FileNumber}",
+                        consumerPoint.pNode.Id,
+                        fileData.DataQueue.Count,
+                        "",
+                        consumerPoint.uid
+                    );
+                    wrapper.logs_2.Add(log);
+                }
+
+
+                fileData = fileQueue.DequeueFile();
                 Console.WriteLine($"Загружается файл: {fileData.FileNumber}");
 
-                var log = new EventLog(
+                log = new EventLog(
                     wrapper.updatedTime,
                     wrapper.updatedTime,
-                    "FileQueue",
+                    consumerPoint.uid,
+                    "startPalletize",
                     $"Loaded file {fileData.FileNumber}",
-                    "FileQueue",
-                    "FileQueue",
-                    -1,
-                    fileData.FileNumber.ToString(),
-                    "FileQueue"
+                    consumerPoint.pNode.Id,
+                    fileData.DataQueue.Count,
+                    "",
+                    consumerPoint.uid
                 );
-                wrapper.logs.Add(log);
+                wrapper.logs_2.Add(log);
+
 
                 while (fileData.DataQueue.Count > 0)
                 {
@@ -114,7 +138,7 @@ namespace SortingCenterModel
             this.pNode = pNode;
             this.wrapper = wrapper;
             this.fileQueue = fileQueue;
-            FifoQueue = new FifoQueueWrapper(fileQueue, wrapper);
+            FifoQueue = new FifoQueueWrapper(fileQueue, wrapper, this);
         }
 
 
