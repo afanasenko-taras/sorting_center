@@ -86,7 +86,6 @@ namespace SortingCenterModel
                         var skuForPeek = consumer.FifoQueue.Peek();
                         if (robot.currentBox == null)
                         {
-
                             if (skuForPeek == robot.targetSkuForFree) //for time moving nothing is changing
                             {
                                 var line = _wrapper.teleportLinesList.Find(x => x.endLine == robot.currentNode && x.boxes.Any(y => y.sku == skuForPeek));

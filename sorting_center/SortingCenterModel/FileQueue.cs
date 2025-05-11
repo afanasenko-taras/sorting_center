@@ -10,6 +10,15 @@ namespace SortingCenterModel
         private Queue<FileData> fileQueue = new Queue<FileData>();
         private HashSet<int> uniqueNumbers = new HashSet<int>(); // Для хранения уникальных номеров
 
+        public FileData PeekFile()
+        {
+            if (fileQueue.Count > 0)
+            {
+                return fileQueue.Peek(); // Метод Peek() доступен в стандартной очереди
+            }
+            return null;
+        }
+
         // Загрузка файлов из папки
         public void LoadFiles(string folderPath)
         {

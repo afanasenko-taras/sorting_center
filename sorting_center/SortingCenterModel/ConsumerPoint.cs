@@ -37,6 +37,45 @@ namespace SortingCenterModel
             throw new InvalidOperationException("Очередь пуста.");
         }
 
+
+        public int Peek(int i)
+        {
+            if (i < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(i), "Индекс не может быть отрицательным.");
+            }
+
+            // Создаем временную очередь для просмотра текущих данных
+            Queue<int> tempQueue = new Queue<int>(currentDataQueue);
+
+            // Локальная переменная для подсчета оставшихся элементов
+            int remainingIndex = i;
+
+            // Проверяем текущую очередь
+            while (tempQueue.Count <= remainingIndex)
+            {
+                remainingIndex -= tempQueue.Count;
+
+                // Получаем следующий файл без удаления
+                FileData nextFileData = fileQueue.PeekFile(); // Метод для просмотра следующего файла
+                if (nextFileData == null)
+                {
+                    throw new InvalidOperationException("Индекс выходит за пределы доступных данных.");
+                }
+
+                // Добавляем данные из следующего файла во временную очередь
+                foreach (var value in nextFileData.DataQueue)
+                {
+                    tempQueue.Enqueue(value);
+                }
+            }
+
+            // Возвращаем i-й элемент
+            return tempQueue.ElementAt(remainingIndex);
+        }
+
+
+
         // Метод для получения количества элементов
         public int Count
         {

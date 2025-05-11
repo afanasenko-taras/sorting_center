@@ -8,6 +8,14 @@ namespace SortingCenterModel
     {
 
 
+        static void Run(int run_id)
+        {
+
+
+
+        }
+
+
         static void Main(string[] args)
         {
 
