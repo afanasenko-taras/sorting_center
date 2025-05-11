@@ -77,35 +77,28 @@ namespace SortingCenterModel
                         var nextNode = _wrapper.shortestPaths[robot.currentNode][robot.targetNodeForMove].path[1];
                         if (robot.currentNode.nextNodes.Contains(nextNode))
                         {
-                            robot.AddCommandMove(nextNode); //we move to the path to Depaletize Node
+                            robot.AddCommandMove(nextNode); //we move to the path targetNodeForMove
                         }
                     }
                     else
                     {
                         var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
-                        var skuForPeek = consumer.FifoQueue.Peek();
                         if (robot.currentBox == null)
                         {
-                            if (skuForPeek == robot.targetSkuForFree) //for time moving nothing is changing
+                            var line = _wrapper.teleportLinesList.Find(x => x.endLine == robot.currentNode && x.boxes.Any(y => y.sku == robot.targetSkuForFree));
+                            if (line != null)
                             {
-                                var line = _wrapper.teleportLinesList.Find(x => x.endLine == robot.currentNode && x.boxes.Any(y => y.sku == skuForPeek));
-                                if (line != null)
-                                {
-                                    robot.AddCommandPickBoxFromChannel(line);
-                                } else
-                                {
-                                    robot.ChangeTask(TransportRobotTask.NoTask);
-                                    robot.ChangeState(TransportRobotState.Waiting);
-                                }
-                            } 
+                                robot.AddCommandPickBoxFromChannel(line);
+                            }
                             else
                             {
-                                robot.ChangeTask(TransportRobotTask.NoTask);
+                                var lines = FindLinesWithSku(robot.targetSkuForFree, robot.currentNode);
+                                robot.targetNodeForMove = lines[0].endLine;
                                 robot.ChangeState(TransportRobotState.Waiting);
                             }
                         }
                         else {
-                            if (robot.currentBox.sku != skuForPeek)
+                            if (robot.currentBox.sku != robot.targetSkuForFree)
                             {
                                 var lines_drop = FindLinesForDrop(robot.currentNode);
                                 if (lines_drop[0].startLine == robot.currentNode)
@@ -115,6 +108,9 @@ namespace SortingCenterModel
                                 else 
                                 {
                                     robot.ChangeTask(TransportRobotTask.MoveBoxToLine);
+                                    robot.consumerPoint.FinishReservation(robot);
+                                    robot.consumerPoint = null;
+                                    robot.targetSkuForFree = -1;
                                     robot.teleportLine = lines_drop[0];
                                 }
                             } 
@@ -129,7 +125,7 @@ namespace SortingCenterModel
 
 
 
-                var waitingRobots = _wrapper.GetWaitingRobot();
+            var waitingRobots = _wrapper.GetWaitingRobot();
             if (waitingRobots.Count() > 0)
             {
                 foreach (var waitingRobot in waitingRobots)
@@ -139,7 +135,6 @@ namespace SortingCenterModel
                     if (waitingRobot.commandList.commands.Count() == 0)
                     {
                         if (waitingRobot.currentBox == null) { 
-
                             RobotNode nextNode = null;
                             if (_wrapper.allSourcePoint.Any(x => x.fifoQueue.Count > 0)) //we try depaletize in this route
                             {
@@ -165,44 +160,28 @@ namespace SortingCenterModel
                             } else // we have too start Paletize
                             {
                                 var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
-                                var skuForPeek = consumer.FifoQueue.Peek();
-                                var line = _wrapper.teleportLinesList.Find(x=>x.boxes.Count()>0 && x.boxes.Peek().sku == skuForPeek);
-                                if (line != null)
+                                var skuForPeek = consumer.FifoQueue.GetSkuForReserve();
+                                if (skuForPeek == -1)
                                 {
-                                    if (_wrapper.shortestPaths[waitingRobot.currentNode][line.endLine].path.Count > 1)
-                                    {
-                                        nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][line.endLine].path[1];
-                                        if (waitingRobot.currentNode.nextNodes.Contains(nextNode))
-                                        {
-                                            waitingRobot.AddCommandMove(nextNode); //we move to the path to Depaletize Node
-                                        }
-                                    }
-                                    else
-                                    {                                      
-                                        waitingRobot.AddCommandPickBoxFromChannel(line);
-                                    }
-                                } else
-                                {
-                                    var lines = FindLinesWithSku(skuForPeek, waitingRobot.currentNode);
-                                    waitingRobot.targetNodeForMove = lines[0].endLine;
-                                    waitingRobot.targetSkuForFree = skuForPeek;
-                                    waitingRobot.ChangeTask(TransportRobotTask.MovedForFreeLine);
-                                    waitingRobot.ChangeState(TransportRobotState.Waiting);
-                                    //Console.WriteLine($"Dig up {waitingRobot.uid} Send to Line {waitingRobot.targetNodeForMove.Id} sku {waitingRobot.targetSkuForFree}");
+                                    waitingRobot.AddCommandMove(waitingRobot.currentNode.nextNodes[0]);
+                                    continue;
                                 }
+                                var lines = FindLinesWithSku(skuForPeek, waitingRobot.currentNode);
+                                waitingRobot.targetNodeForMove = lines[0].endLine;
+                                waitingRobot.targetSkuForFree = skuForPeek;
+                                waitingRobot.consumerPoint = consumer;
+                                consumer.MakeReservation(skuForPeek, waitingRobot);
+                                waitingRobot.ChangeTask(TransportRobotTask.MovedForFreeLine);
+                                waitingRobot.ChangeState(TransportRobotState.Waiting);
                             }
                         }
                         else //robot have box
                         {
                             if (waitingRobot.CurrentTask == TransportRobotTask.MoveBoxToLine) //and we need put this box in any line
                             {
-                                while (waitingRobot.teleportLine == null)
+                                if (waitingRobot.teleportLine == null)
                                 {
-                                    var teleportLine = _wrapper.teleportLinesList[rnd.Next(_wrapper.teleportLinesList.Count())];
-                                    if (teleportLine.boxes.Count < _wrapper.sortConfig.subRowNumber)
-                                    {
-                                        waitingRobot.teleportLine = teleportLine;
-                                    }
+                                    waitingRobot.teleportLine = FindLinesForDrop(waitingRobot.currentNode)[0];
                                 }
                                 if (_wrapper.shortestPaths[waitingRobot.currentNode][waitingRobot.teleportLine.startLine].path.Count > 1)
                                 {
@@ -233,10 +212,17 @@ namespace SortingCenterModel
                                 {
                                     if (waitingRobot.currentBox.sku == consumer.FifoQueue.Peek())
                                     {
-                                        waitingRobot.AddCommandPlaceBoxIntoPalletAssembly(consumer);
+                                        if (consumer.reservedSku.Peek().robot == waitingRobot)
+                                        {
+                                            waitingRobot.AddCommandPlaceBoxIntoPalletAssembly(consumer);
+                                        }
+                                        else
+                                        {
+                                            waitingRobot.AddCommandMove(waitingRobot.currentNode.nextNodes[0]); //TODO DROP AND CHANGE queue
+                                        }
                                     } else
                                     {
-                                        waitingRobot.ChangeTask(TransportRobotTask.MoveBoxToLine);
+                                        waitingRobot.AddCommandMove(waitingRobot.currentNode.nextNodes[0]);
                                     }
                                 }
                             }

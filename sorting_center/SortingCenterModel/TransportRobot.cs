@@ -39,6 +39,7 @@ namespace SortingCenterModel
         public SourcePoint getSourcePoint = null;
         public TeleportLine teleportLine = null;
         public double speed = 1;
+        public ConsumerPoint consumerPoint = null; // Точка, куда робот должен положить коробку
 
         public RobotNode targetNodeForMove = null;
         public int targetSkuForFree = -1;
@@ -213,7 +214,7 @@ namespace SortingCenterModel
             _endAt = timeSpan;
             teleportLine.boxes.Enqueue(currentBox);
             CurrentState = TransportRobotState.Waiting;
-            CurrentTask = TransportRobotTask.Depaltize;
+            //CurrentTask = TransportRobotTask.Depaltize;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2channel", currentNode.Id, teleportLine.startLine.Id, currentBox.sku, "", "");
             wrapper.logs_2.Add(log);
             teleportLine = null;
@@ -275,8 +276,8 @@ namespace SortingCenterModel
             _endAt = timeSpan;
             currentBox = teleportLine.boxes.Dequeue();
             CurrentState = TransportRobotState.Waiting;
-            if (CurrentTask != TransportRobotTask.MovedForFreeLine)
-                CurrentTask = TransportRobotTask.MoveBoxToPaletize;
+            //if (CurrentTask != TransportRobotTask.MovedForFreeLine)
+            //    CurrentTask = TransportRobotTask.MoveBoxToPaletize;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2bot", teleportLine.endLine.Id, currentNode.Id, currentBox.sku, "", "");
             wrapper.logs_2.Add(log);
             teleportLine = null;
@@ -287,18 +288,16 @@ namespace SortingCenterModel
             _startAt = timeSpan;
             _endAt = timeSpan;
             int sku = consumer.FifoQueue.Dequeue();
+            var res = consumer.reservedSku.Dequeue();
+            if (res.sku != sku)
+            {
+                throw new Exception($"Error in reservation. Expected {res.sku}, but got {sku}");
+            }
             wrapper.skuCount[sku]--;
-            Console.WriteLine($"Put {sku} to {currentBox.sku} consumer.lenght {consumer.FifoQueue.Count} {wrapper.skuCount[sku]}");
             CurrentState = TransportRobotState.Waiting;
             CurrentTask = TransportRobotTask.NoTask;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2tr", currentNode.Id, consumer.pNode.Id, currentBox.sku, "", consumer.pNode.Id);
             wrapper.logs_2.Add(log);
-            if (consumer.FifoQueue.Count == 0)
-            {
-                log = new EventLog(_startAt, _endAt, consumer.uid, "finishPalletize", consumer.pNode.Id, consumer.pNode.Id, -1, "", consumer.pNode.Id);
-                wrapper.logs_2.Add(log);
-            }
-
             consumer = null;
             currentBox = null;
         }

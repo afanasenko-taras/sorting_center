@@ -38,6 +38,17 @@ namespace SortingCenterModel
         }
 
 
+        public int GetSkuForReserve()
+        {
+            var failedReserv = consumerPoint.reservedSku.FirstOrDefault(x => x.robot == null);
+            if (failedReserv != null)
+            {
+                return failedReserv.sku;
+            }
+
+            return Peek(consumerPoint.reservedSku.Count);
+        }
+
         public int Peek(int i)
         {
             if (i < 0)
@@ -45,33 +56,18 @@ namespace SortingCenterModel
                 throw new ArgumentOutOfRangeException(nameof(i), "Индекс не может быть отрицательным.");
             }
 
-            // Создаем временную очередь для просмотра текущих данных
-            Queue<int> tempQueue = new Queue<int>(currentDataQueue);
-
-            // Локальная переменная для подсчета оставшихся элементов
-            int remainingIndex = i;
-
-            // Проверяем текущую очередь
-            while (tempQueue.Count <= remainingIndex)
+            int remainingIndex = i; // Индекс для поиска в текущей очереди
+            if (remainingIndex >= currentDataQueue.Count)
             {
-                remainingIndex -= tempQueue.Count;
-
-                // Получаем следующий файл без удаления
-                FileData nextFileData = fileQueue.PeekFile(); // Метод для просмотра следующего файла
+                remainingIndex -= currentDataQueue.Count;
+                FileData nextFileData = fileQueue.PeekFile();
                 if (nextFileData == null)
                 {
-                    throw new InvalidOperationException("Индекс выходит за пределы доступных данных.");
+                    return -1;
                 }
-
-                // Добавляем данные из следующего файла во временную очередь
-                foreach (var value in nextFileData.DataQueue)
-                {
-                    tempQueue.Enqueue(value);
-                }
+                return nextFileData.DataQueue.ElementAt(remainingIndex);
             }
-
-            // Возвращаем i-й элемент
-            return tempQueue.ElementAt(remainingIndex);
+            return currentDataQueue.ElementAt(remainingIndex);
         }
 
 
@@ -93,7 +89,7 @@ namespace SortingCenterModel
         public int Dequeue()
         {
             LoadNextFileIfNeeded();
-            Console.WriteLine(currentDataQueue.Count);
+            //Console.WriteLine(currentDataQueue.Count);
             if (currentDataQueue.Count > 0)
             {
                 return currentDataQueue.Dequeue();
@@ -161,7 +157,16 @@ namespace SortingCenterModel
     }
 
 
-
+    public class ReservSku
+    {
+        public int sku;
+        public TransportRobot? robot;
+        public ReservSku(int sku, TransportRobot? robot)
+        {
+            this.sku = sku;
+            this.robot = robot;
+        }
+    }
 
     public class ConsumerPoint : FastAbstractObject
     {
@@ -171,6 +176,42 @@ namespace SortingCenterModel
         private SortCenterWrapper wrapper;
         private FileQueue fileQueue;
         public FifoQueueWrapper FifoQueue;
+        
+        public Queue<ReservSku> reservedSku = new Queue<ReservSku>(); // Очередь для резервирования SKU 
+        
+        internal void TaskIsImposibleForRobot(TransportRobot robot)
+        {
+            var reservedItem = reservedSku.First(x => x.robot == robot);
+            reservedItem.robot = null;
+        }
+
+        internal void MakeReservation(int skuForPeek, TransportRobot waitingRobot)
+        {
+            if (waitingRobot.targetSkuForFree!=skuForPeek)
+            {
+                throw new Exception("waitingRobot.targetSkuForFree!=skuForPeek");
+            }
+            if (reservedSku.Any(x=>x.robot == waitingRobot))
+            {
+                throw new Exception("Add wrong robot!!!");
+            }
+
+            var failedReserv = reservedSku.FirstOrDefault(x => x.robot == null & x.sku == skuForPeek);
+            if (failedReserv != null)
+            {
+                failedReserv.robot = waitingRobot;
+                return;
+            }
+            else
+            {
+                reservedSku.Enqueue(new ReservSku(skuForPeek, waitingRobot));
+            }
+        }
+        internal void FinishReservation(TransportRobot robot)
+        {
+            var reservedItem = reservedSku.First(x => x.robot == robot);
+            reservedItem.robot = null;
+        }
 
         public ConsumerPoint(PalettizeNode pNode, SortCenterWrapper wrapper, FileQueue fileQueue)
         {
@@ -220,5 +261,7 @@ namespace SortingCenterModel
         {
             // Логика обновления, если требуется
         }
+
+
     }
 }
