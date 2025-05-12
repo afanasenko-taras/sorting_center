@@ -79,7 +79,7 @@ namespace SortingCenterModel
             eventLogFile.Close();
             */
 
-            eventLogFile = new StreamWriter($"run/store-log-{sortConfig.shutleNumber}-{sortConfig.skuSize}-{sortConfig.palleteSize}-{folderPath}.csv");
+            eventLogFile = new StreamWriter($"run/store-log-mfcgp-{sortConfig.shutleNumber}-{sortConfig.skuSize}-{sortConfig.palleteSize}-{folderPath}.csv");
             eventLogFile.WriteLine("ID,startTime,endTime,botId,command,Start,End,boxType,channel,TrID");
             for (int i = 0; i < wrapper.logs_2.Count(); i++)
             {
@@ -96,7 +96,7 @@ namespace SortingCenterModel
         static void Main(string[] args)
         {
 
-            for (int i = 1; i <= 15; i++)
+            for (int i = 8; i <= 8; i++)
             {
                 Run(i);
             }

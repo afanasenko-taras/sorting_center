@@ -60,6 +60,53 @@ namespace SortingCenterModel
                 .ToList();
         }
 
+
+        private List<TeleportLine> FindLinesForDropMECGP(RobotNode currentNode)
+        {
+            return _wrapper.teleportLinesList
+                .Where(line =>
+                    line.boxes.Count < 10 &&
+                    _wrapper.shortestPaths.ContainsKey(currentNode) &&
+                    _wrapper.shortestPaths[currentNode].ContainsKey(line.startLine) // Путь к endLine для забора
+                )
+                .Select(line =>
+                {
+                    return new
+                    {
+                        Line = line,
+                        Count = line.boxes.Count,
+                        Distance = _wrapper.shortestPaths[currentNode][line.startLine].distance
+                    };
+                })
+                .OrderBy(x => x.Count) // Ближе к началу очереди -> меньше перемещений
+                .ThenBy(x => x.Distance)
+                .Select(x => x.Line)
+                .ToList();
+        }
+
+        private List<TeleportLine> FindLinesForDropMFCGP(RobotNode currentNode)
+        {
+            return _wrapper.teleportLinesList
+                .Where(line =>
+                    line.boxes.Count < 10 &&
+                    _wrapper.shortestPaths.ContainsKey(currentNode) &&
+                    _wrapper.shortestPaths[currentNode].ContainsKey(line.startLine) // Путь к endLine для забора
+                )
+                .Select(line =>
+                {
+                    return new
+                    {
+                        Line = line,
+                        Count = line.boxes.Count,
+                        Distance = _wrapper.shortestPaths[currentNode][line.startLine].distance
+                    };
+                })
+                .OrderByDescending(x => x.Count) // Ближе к началу очереди -> больше перемещений
+                .ThenBy(x => x.Distance)
+                .Select(x => x.Line)
+                .ToList();
+        }
+
         public void ManageRobots(TimeSpan timeSpan)
         {
             var movingForFreeSku = _wrapper.GetRobotByTask(TransportRobotTask.MovedForFreeLine);
@@ -181,7 +228,7 @@ namespace SortingCenterModel
                             {
                                 if (waitingRobot.teleportLine == null)
                                 {
-                                    waitingRobot.teleportLine = FindLinesForDrop(waitingRobot.currentNode)[0];
+                                    waitingRobot.teleportLine = FindLinesForDropMFCGP(waitingRobot.currentNode)[0];
                                 }
                                 if (_wrapper.shortestPaths[waitingRobot.currentNode][waitingRobot.teleportLine.startLine].path.Count > 1)
                                 {

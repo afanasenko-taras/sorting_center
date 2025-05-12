@@ -65,6 +65,10 @@ namespace SortingCenterModel
                 {
                     return -1;
                 }
+                if (remainingIndex >= nextFileData.DataQueue.Count)
+                {
+                    return -1;
+                }
                 return nextFileData.DataQueue.ElementAt(remainingIndex);
             }
             return currentDataQueue.ElementAt(remainingIndex);
