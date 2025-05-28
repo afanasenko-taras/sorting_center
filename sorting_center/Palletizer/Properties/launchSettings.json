@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Palletizer": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

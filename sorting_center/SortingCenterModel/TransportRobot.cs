@@ -24,7 +24,7 @@ namespace SortingCenterModel
         MoveBoxToLine,
         MoveBoxToPaletize,
         NoTask,
-        MovedForFreeLine
+        TakeBoxFromLine
     }
 
 

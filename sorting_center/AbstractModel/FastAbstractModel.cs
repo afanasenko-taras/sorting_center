@@ -16,14 +16,6 @@ namespace AbstractModel
         public TimeSpan lastUpdated;
         public abstract (TimeSpan, FastAbstractEvent) getNearestEvent();
         public abstract void Update(TimeSpan timeSpan);
-
-        public int uidi
-        {
-            get
-            {
-                return int.Parse(uid);
-            }
-        }
     }
 
     public abstract class FastAbstractEvent

@@ -109,7 +109,7 @@ namespace SortingCenterModel
 
         public void ManageRobots(TimeSpan timeSpan)
         {
-            var movingForFreeSku = _wrapper.GetRobotByTask(TransportRobotTask.MovedForFreeLine);
+            var movingForFreeSku = _wrapper.GetRobotByTask(TransportRobotTask.TakeBoxFromLine);
             if (movingForFreeSku.Count() > 0)
             {
                 foreach(var robot in movingForFreeSku)
@@ -177,7 +177,7 @@ namespace SortingCenterModel
             {
                 foreach (var waitingRobot in waitingRobots)
                 {
-                    if (waitingRobot.CurrentTask == TransportRobotTask.MovedForFreeLine)
+                    if (waitingRobot.CurrentTask == TransportRobotTask.TakeBoxFromLine)
                         continue;
                     if (waitingRobot.commandList.commands.Count() == 0)
                     {
@@ -218,7 +218,7 @@ namespace SortingCenterModel
                                 waitingRobot.targetSkuForFree = skuForPeek;
                                 waitingRobot.consumerPoint = consumer;
                                 consumer.MakeReservation(skuForPeek, waitingRobot);
-                                waitingRobot.ChangeTask(TransportRobotTask.MovedForFreeLine);
+                                waitingRobot.ChangeTask(TransportRobotTask.TakeBoxFromLine);
                                 waitingRobot.ChangeState(TransportRobotState.Waiting);
                             }
                         }
@@ -247,9 +247,21 @@ namespace SortingCenterModel
                             {
                                 var consumer = (ConsumerPoint)_wrapper.GetFilteredObjects(obj => obj is ConsumerPoint)[0];
                                 var nodeDrop = _wrapper.robotNodes[consumer.pNode.join_row][consumer.pNode.join_col];
+                                
                                 if (_wrapper.shortestPaths[waitingRobot.currentNode][nodeDrop].path.Count > 1)
                                 {
                                     var nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][nodeDrop].path[1];
+                                    var position = (waitingRobot.consumerPoint.reservedSku
+                                            .Select((item, index) => new { item, index })
+                                            .FirstOrDefault(x => x.item.robot == waitingRobot)?.index).Value;
+                                    if (position > 6)
+                                    {
+                                        var row = _wrapper.robotNodes[Math.Max(0, 12 - position)];
+                                        var col = rnd.Next(row.Keys.Count);
+                                        var AnyWhereNode = row[row.Keys.ElementAt(col)];
+                                        if (AnyWhereNode != waitingRobot.currentNode)
+                                            nextNode = _wrapper.shortestPaths[waitingRobot.currentNode][AnyWhereNode].path[1];
+                                    }
                                     if (waitingRobot.currentNode.nextNodes.Contains(nextNode))
                                     {
                                         waitingRobot.AddCommandMove(nextNode); //we move to the path to Depaletize Node

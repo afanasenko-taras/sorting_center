@@ -57,21 +57,24 @@ namespace SortingCenterModel
             }
 
             int remainingIndex = i; // Индекс для поиска в текущей очереди
-            if (remainingIndex >= currentDataQueue.Count)
+            var nextFileData = currentDataQueue;
+            int next = 0;
+            while (remainingIndex >= nextFileData.Count)
             {
-                remainingIndex -= currentDataQueue.Count;
-                FileData nextFileData = fileQueue.PeekFile();
+                remainingIndex -= nextFileData.Count;
+                var fileNext = fileQueue.PeekFile(next);
+                if (fileNext == null)
+                {
+                    return -1;
+                }
+                nextFileData = fileNext.DataQueue;
+                next++;
                 if (nextFileData == null)
                 {
                     return -1;
                 }
-                if (remainingIndex >= nextFileData.DataQueue.Count)
-                {
-                    return -1;
-                }
-                return nextFileData.DataQueue.ElementAt(remainingIndex);
             }
-            return currentDataQueue.ElementAt(remainingIndex);
+            return nextFileData.ElementAt(remainingIndex);
         }
 
 

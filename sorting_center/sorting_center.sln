@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortingCenterAPI", "Sorting
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortingCenterFrontend", "SortingCenterFrontend\SortingCenterFrontend.csproj", "{D4C96823-902A-44A9-A8D0-030E5122AFDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palletizer", "Palletizer\Palletizer.csproj", "{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D4C96823-902A-44A9-A8D0-030E5122AFDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4C96823-902A-44A9-A8D0-030E5122AFDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4C96823-902A-44A9-A8D0-030E5122AFDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

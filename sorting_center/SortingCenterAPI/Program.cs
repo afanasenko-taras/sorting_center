@@ -25,6 +25,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton(provider =>
 {
+    /*
     var config = new SortingCenterConfig
     {
         rowNumber = 5,
@@ -45,8 +46,10 @@ builder.Services.AddSingleton(provider =>
              new JoinPoint(58, 44, 7, 44) // Пример объекта
         }
     };
-    Helper.SerializeXMLToFile(config, "sorting_center_config.xml");
-    return new SortCenterWrapper(config);
+    */
+    var config = Helper.DeserializeXMLFromFile<SortingCenterConfig>("sorting_center_config.xml");
+    //Helper.SerializeXMLToFile(config, "sorting_center_config.xml");
+    return new SortCenterWrapper(config, new List<int>());
 });
 
 builder.Services.AddControllers()
