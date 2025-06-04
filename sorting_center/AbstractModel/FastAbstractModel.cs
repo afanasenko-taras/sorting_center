@@ -44,6 +44,13 @@ namespace AbstractModel
                 writeDebug(debug);
         }
 
+        public TimeSpan GetNearEventTime()
+        {
+            if (eventList.Count == 0)
+                return TimeSpan.MaxValue;
+            return eventList.First().Key;
+        }
+
         public void RemoveObjects(string uid)
         {
             objects.Remove(uid);
