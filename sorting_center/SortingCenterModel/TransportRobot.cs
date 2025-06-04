@@ -46,6 +46,10 @@ namespace SortingCenterModel
 
         public CommandList commandList;
 
+        public double x { get; private set; }
+        public double y { get; private set; }
+        public double speed_x { get; private set; }
+        public double speed_y { get; private set; }
 
         public TimeSpan _endAt { get; private set; } = TimeSpan.Zero;
 
@@ -74,6 +78,10 @@ namespace SortingCenterModel
             commandList = new CommandList(this);
             _endAt = createTime + TimeSpan.FromTicks(1);
             lastUpdated = createTime;
+            this.x = node.x;
+            this.y = node.y;
+            this.speed_x = 0;
+            this.speed_y = 0;
         }
 
 
@@ -121,7 +129,11 @@ namespace SortingCenterModel
 
         public override void Update(TimeSpan timeSpan)
         {
+
+            x += speed_x * (timeSpan - lastUpdated).TotalSeconds;
+            y += speed_y * (timeSpan - lastUpdated).TotalSeconds;
             lastUpdated = timeSpan;
+
         }
 
         internal void AddCommandMove(RobotNode nextNode)
@@ -234,6 +246,10 @@ namespace SortingCenterModel
             var log = new EventLog(_startAt, _endAt, uid, "finishMotion", currentNode.Id, movedTo.Id, 0, "", "");
             wrapper.logs.Add(log);
             wrapper.WriteDebug($"Robot {uid} is coming to {currentNode.x} {currentNode.y} ");
+            x = movedTo.x;
+            y = movedTo.y;
+            speed_x = 0;
+            speed_y = 0;
         }
 
 
@@ -248,6 +264,8 @@ namespace SortingCenterModel
             _endAt = timeSpan + TimeSpan.FromSeconds(CalculateDistance(currentNode, nextNode) / wrapper.sortConfig.robotSpeedMs);
             var log = new EventLog(_startAt, _endAt, uid, "startMotion", currentNode.Id, movedTo.Id, 0, "", "");
             wrapper.logs.Add(log);
+            speed_x = (movedTo.x - x) / (_endAt - _startAt).TotalSeconds;
+            speed_y = (movedTo.y - y) / (_endAt - _startAt).TotalSeconds;
         }
 
 
