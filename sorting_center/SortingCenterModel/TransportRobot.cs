@@ -46,10 +46,10 @@ namespace SortingCenterModel
 
         public CommandList commandList;
 
-        public double x { get; private set; }
-        public double y { get; private set; }
-        public double speed_x { get; private set; }
-        public double speed_y { get; private set; }
+        public float x { get; private set; }
+        public float y { get; private set; }
+        public float speed_x { get; private set; }
+        public float speed_y { get; private set; }
 
         public TimeSpan _endAt { get; private set; } = TimeSpan.Zero;
 
@@ -130,8 +130,8 @@ namespace SortingCenterModel
         public override void Update(TimeSpan timeSpan)
         {
 
-            x += speed_x * (timeSpan - lastUpdated).TotalSeconds;
-            y += speed_y * (timeSpan - lastUpdated).TotalSeconds;
+            x += speed_x * (float)(timeSpan - lastUpdated).TotalSeconds;
+            y += speed_y * (float)(timeSpan - lastUpdated).TotalSeconds;
             lastUpdated = timeSpan;
 
         }
@@ -264,8 +264,8 @@ namespace SortingCenterModel
             _endAt = timeSpan + TimeSpan.FromSeconds(CalculateDistance(currentNode, nextNode) / wrapper.sortConfig.robotSpeedMs);
             var log = new EventLog(_startAt, _endAt, uid, "startMotion", currentNode.Id, movedTo.Id, 0, "", "");
             wrapper.logs.Add(log);
-            speed_x = (movedTo.x - x) / (_endAt - _startAt).TotalSeconds;
-            speed_y = (movedTo.y - y) / (_endAt - _startAt).TotalSeconds;
+            speed_x = (movedTo.x - x) / (float)(_endAt - _startAt).TotalSeconds;
+            speed_y = (movedTo.y - y) / (float)(_endAt - _startAt).TotalSeconds;
         }
 
 
