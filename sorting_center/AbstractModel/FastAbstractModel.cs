@@ -134,6 +134,16 @@ namespace AbstractModel
             return objects.Values.Where(filterCriteria).ToList();
         }
 
+        public List<FastAbstractObject> GetObjectsForUpdate()
+        {
+            if (objectsKeyForUpdate == null || objectsKeyForUpdate.Count == 0)
+                return new List<FastAbstractObject>();
+
+            return objects.Values
+                         .Where(obj => obj != null && objectsKeyForUpdate.Contains(obj.uid))
+                         .ToList();
+        }
+
     }
 
 
