@@ -228,7 +228,7 @@ namespace SortingCenterModel
                             {
                                 if (waitingRobot.teleportLine == null)
                                 {
-                                    waitingRobot.teleportLine = FindLinesForDropMFCGP(waitingRobot.currentNode)[0];
+                                    waitingRobot.teleportLine = FindLinesForDrop(waitingRobot.currentNode)[0];
                                 }
                                 if (_wrapper.shortestPaths[waitingRobot.currentNode][waitingRobot.teleportLine.startLine].path.Count > 1)
                                 {
