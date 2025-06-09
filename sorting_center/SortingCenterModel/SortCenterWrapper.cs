@@ -14,6 +14,7 @@ namespace SortingCenterModel
 
     public class TeleportLine
     {
+        public string uid = Guid.NewGuid().ToString();
         public RobotNode startLine = null;
         public RobotNode endLine = null;
         public Queue<Box> boxes = new Queue<Box>();
