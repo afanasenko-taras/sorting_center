@@ -38,6 +38,7 @@ namespace SortingCenterModel
         public Box currentBox = null; // Текущая коробка, которую робот перевозит
         public SourcePoint getSourcePoint = null;
         public TeleportLine teleportLine = null;
+        public TeleportLine teleportLineForUpdate = null;
         public double speed = 1;
         public ConsumerPoint consumerPoint = null; // Точка, куда робот должен положить коробку
 
@@ -133,7 +134,7 @@ namespace SortingCenterModel
             x += speed_x * (float)(timeSpan - lastUpdated).TotalSeconds;
             y += speed_y * (float)(timeSpan - lastUpdated).TotalSeconds;
             lastUpdated = timeSpan;
-
+            teleportLineForUpdate = null;
         }
 
         internal void AddCommandMove(RobotNode nextNode)
@@ -225,6 +226,7 @@ namespace SortingCenterModel
             _startAt = timeSpan;
             _endAt = timeSpan;
             teleportLine.boxes.Enqueue(currentBox);
+            teleportLineForUpdate = teleportLine;
             CurrentState = TransportRobotState.Waiting;
             //CurrentTask = TransportRobotTask.Depaltize;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2channel", currentNode.Id, teleportLine.startLine.Id, currentBox.sku, "", "");
@@ -293,6 +295,7 @@ namespace SortingCenterModel
             _startAt = timeSpan;
             _endAt = timeSpan;
             currentBox = teleportLine.boxes.Dequeue();
+            teleportLineForUpdate = teleportLine;
             CurrentState = TransportRobotState.Waiting;
             //if (CurrentTask != TransportRobotTask.MovedForFreeLine)
             //    CurrentTask = TransportRobotTask.MoveBoxToPaletize;
