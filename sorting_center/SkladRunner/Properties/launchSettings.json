@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SkladRunner": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortingCenterFrontend", "So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palletizer", "Palletizer\Palletizer.csproj", "{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkladModel", "SkladModel\SkladModel.csproj", "{437824D7-B147-430D-9129-0949A500A09D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkladRunner", "SkladRunner\SkladRunner.csproj", "{9C123277-59ED-40F7-8344-41BA7929AC02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B908701F-CF21-49F8-A4B2-5B7E2F90DC68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{437824D7-B147-430D-9129-0949A500A09D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{437824D7-B147-430D-9129-0949A500A09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{437824D7-B147-430D-9129-0949A500A09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{437824D7-B147-430D-9129-0949A500A09D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C123277-59ED-40F7-8344-41BA7929AC02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C123277-59ED-40F7-8344-41BA7929AC02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C123277-59ED-40F7-8344-41BA7929AC02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C123277-59ED-40F7-8344-41BA7929AC02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
