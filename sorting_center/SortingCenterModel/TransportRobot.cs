@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -200,6 +201,22 @@ namespace SortingCenterModel
 
         internal void StartPlaceBoxIntoChannel(TimeSpan timeSpan, TeleportLine teleportLine)
         {
+            if (teleportLine.boxes.Count > 10)
+                throw new Exception("Alarm too many boxes in line");
+            if (teleportLine.boxes.Count == 10)
+            {
+                _startAt = timeSpan;
+                _endAt = timeSpan;
+                CurrentState = TransportRobotState.Waiting;
+                CurrentTask = TransportRobotTask.MoveBoxToLine;
+                this.teleportLine = null;
+                var log1 = new EventLog(_startAt, _endAt, uid, "failed_movebox2channel", currentNode.Id, teleportLine.startLine.Id, currentBox.sku, "", ""); wrapper.logs_2.Add(log1);
+                commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
+                wrapper.logs_2.Add(log1);
+                return;
+            }
+
+            
             commandList.commands = new List<(TimeSpan Key, FastAbstractEvent Ev)>();
             CurrentState = TransportRobotState.PlaceBoxIntoChannel;
             _startAt = timeSpan;
@@ -225,10 +242,11 @@ namespace SortingCenterModel
         {
             _startAt = timeSpan;
             _endAt = timeSpan;
+            if (teleportLine.boxes.Count >= 10)
+                throw new Exception("Too big number box in line");
             teleportLine.boxes.Enqueue(currentBox);
             teleportLineForUpdate = teleportLine;
             CurrentState = TransportRobotState.Waiting;
-            //CurrentTask = TransportRobotTask.Depaltize;
             var log = new EventLog(_startAt, _endAt, uid, "end_movebox2channel", currentNode.Id, teleportLine.startLine.Id, currentBox.sku, "", "");
             wrapper.logs_2.Add(log);
             teleportLine = null;
